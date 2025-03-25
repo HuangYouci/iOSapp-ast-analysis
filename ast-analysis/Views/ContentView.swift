@@ -14,10 +14,10 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab){
-            InputView()
+            HomeView()
                 .tabItem {
                     Image(systemName: "square.and.pencil")
-                    Text("輸入")
+                    Text("主頁")
                 }
                 .tag(0)
             ResultView()
@@ -39,3 +39,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+

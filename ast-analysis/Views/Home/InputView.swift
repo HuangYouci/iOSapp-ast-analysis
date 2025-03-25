@@ -10,6 +10,9 @@ import SwiftUI
 struct InputView: View {
     
     @EnvironmentObject private var userData: UserData
+    @EnvironmentObject private var departmentData: DepartmentData
+    
+    @Environment(\.dismiss) var dismiss
     
     @State private var editingPage: Int = 0
     @State private var editingGsatCH: String = ""
@@ -29,6 +32,8 @@ struct InputView: View {
     @State private var editingGsatEL: Int = 0
     @State private var editingOtherSP: Int = 0
     @State private var isFinished: Bool = false
+    @State private var editing: UserGrade = UserGrade(dataName: "", GsatCH: 0, GsatEN: 0, GsatMA: 0, GsatMB: 0, GsatSO: 0, GsatSC: 0, GsatEL: 0, AstMA: 0, AstMB: 0, AstPH: 0, AstCH: 0, AstBI: 0, AstHI: 0, AstGE: 0, AstSO: 0, SpecialType: 0, SpecialPercentage: 0)
+    @State private var analyseStep: Int = 0
     
     var body: some View {
         VStack(alignment: .leading){
@@ -427,7 +432,7 @@ struct InputView: View {
                             withAnimation(.easeInOut){
                                 editingPage = 3
                             }
-                            userData.userData.grade.append(UserGrade(dataName: "資料 #\(userData.userData.grade.count + 1)", GsatCH: returnScore(editingGsatCH), GsatEN: returnScore(editingGsatEN), GsatMA: returnScore(editingGsatMA), GsatMB: returnScore(editingGsatMB), GsatSO: returnScore(editingGsatSO), GsatSC: returnScore(editingGsatSC), GsatEL: editingGsatEL, AstMA: returnScore(editingAstMA), AstMB: returnScore(editingAstMB), AstPH: returnScore(editingAstPH), AstCH: returnScore(editingAstCH), AstBI: returnScore(editingAstBI), AstHI: returnScore(editingAstHI), AstGE: returnScore(editingAstGE), AstSO: returnScore(editingAstSO), SpecialType: editingOtherSP, SpecialPercentage: getPercentage(for: editingOtherSP)))
+                            editing = UserGrade(dataName: "資料 #\(userData.userData.grade.count + 1)", GsatCH: returnScore(editingGsatCH), GsatEN: returnScore(editingGsatEN), GsatMA: returnScore(editingGsatMA), GsatMB: returnScore(editingGsatMB), GsatSO: returnScore(editingGsatSO), GsatSC: returnScore(editingGsatSC), GsatEL: editingGsatEL, AstMA: returnScore(editingAstMA), AstMB: returnScore(editingAstMB), AstPH: returnScore(editingAstPH), AstCH: returnScore(editingAstCH), AstBI: returnScore(editingAstBI), AstHI: returnScore(editingAstHI), AstGE: returnScore(editingAstGE), AstSO: returnScore(editingAstSO), SpecialType: editingOtherSP, SpecialPercentage: getPercentage(for: editingOtherSP))
                         } label: {
                             HStack{
                                 Text("完成")
@@ -442,6 +447,40 @@ struct InputView: View {
                 
                 if isFinished {
                     VStack(alignment: .center){
+                        Spacer()
+                        VStack(spacing: 5){
+                            Image(systemName: "clock")
+                                .font(.largeTitle)
+                                .foregroundStyle(Color(.accent))
+                            Text("分析中")
+                                .font(.title2)
+                                .bold()
+                            Text("請稍候")
+                                .foregroundStyle(Color(.systemGray))
+                                .padding(.bottom, 10)
+                            ProgressView(value: ( Double(analyseStep) / 8.0 ))
+                                .padding(.horizontal, 50)
+                        }
+                        Spacer()
+                        HStack{
+                            Spacer()
+                        }
+                    }
+                    .inputCard()
+                    .disabled(editingPage != 3)
+                    .onAppear {
+                        if analyseStep == 0 {
+                            Task {
+                                await analyse()
+                                userData.userData.grade.append(editing)
+                                userData.userData.analyzeCount -= 1
+                                withAnimation {
+                                    editingPage = 4
+                                }
+                            }
+                        }
+                    }
+                    VStack(alignment: .center){
                         
                         Spacer()
                         VStack(spacing: 5){
@@ -453,30 +492,22 @@ struct InputView: View {
                                 .bold()
                             Text("資料已登錄，請至分析頁查看分析結果")
                                 .foregroundStyle(Color(.systemGray))
+                            Text("分析次數已扣除，目前尚餘 \(userData.userData.analyzeCount) 次")
+                                .foregroundStyle(Color(.systemGray))
                         }
                         Spacer()
                         HStack{
                             Spacer()
                             Button{
+                                dismiss()
                                 withAnimation(.easeInOut){
                                     editingPage = 0
                                     isFinished = false
                                 }
                             } label: {
                                 HStack{
-                                    Text("輸入新成績")
-                                    Image(systemName: "arrow.trianglehead.clockwise")
-                                }
-                            }
-                            .buttonStyle(.bordered)
-                            Button{
-                                withAnimation(.easeInOut){
-                                    editingPage = 0
-                                }
-                            } label: {
-                                HStack{
-                                    Text("查看分析")
-                                    Image(systemName: "chevron.right")
+                                    Text("關閉此頁")
+                                    Image(systemName: "xmark")
                                 }
                             }
                             .buttonStyle(.borderedProminent)
@@ -484,7 +515,7 @@ struct InputView: View {
                         }
                     }
                     .inputCard()
-                    .disabled(editingPage != 3)
+                    .disabled(editingPage != 4)
                 }
                 
             }
@@ -525,7 +556,7 @@ struct InputView: View {
         }
     }
     
-    func getPercentage(for type: Int) -> Int {
+    private func getPercentage(for type: Int) -> Int {
         switch type {
         case 0: // 一般生
             return 0
@@ -547,9 +578,295 @@ struct InputView: View {
             return 0 // 未定義的 tag 返回 0
         }
     }
+    
+    // 分析
+    
+    private func analyse() async {
+        
+        // 1. 先篩選通過之校系
+        
+        var departments = await analyseFilteredDepartments(departments: departmentData.departments, result: editing)
+        analyseStep = 1
+        
+        // 2. 計算成績
+        
+        departments = await analyseCalculate(departments: departments, result: editing)
+        analyseStep = 2
+        
+        // 3. 排序 (存於[0])
+        
+        await editing.analyse.append(analyseFilteredDepartments(departments: departments, result: editing))
+        analyseStep = 3
+        
+        // 4. 計算五星 (存於[1~5])
+        
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 1.01, percentDown: 0.8))
+        analyseStep = 4
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0.8, percentDown: 0.6))
+        analyseStep = 5
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0.6, percentDown: 0.4))
+        analyseStep = 6
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0.4, percentDown: 0.2))
+        analyseStep = 7
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0.2, percentDown: 0))
+        analyseStep = 8
+    }
+    
+    private func analyseFilteredDepartments(departments: [Departments], result: UserGrade) async -> [Departments] {
+        
+        let filteredDepartments: [Departments] = departments.filter { department in
+            // 內嵌 checkTestPassed 邏輯
+            let checkTestPassed: (Int, Int, String) -> Bool = { you, type, goal in
+                // type: 0 國文 1 英文 2 數Ａ 3 數Ｂ 4 自然 5 社會
+                var mine: Int = 0
+                switch type {
+                case 5: // 社會
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.SOLevel1
+                    case "前標":
+                        mine = LevelConstants.SOLevel2
+                    case "均標":
+                        mine = LevelConstants.SOLevel3
+                    case "後標":
+                        mine = LevelConstants.SOLevel4
+                    case "底標":
+                        mine = LevelConstants.SOLevel5
+                    default:
+                        mine = -2
+                    }
+                case 4: // 自然
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.SCLevel1
+                    case "前標":
+                        mine = LevelConstants.SCLevel2
+                    case "均標":
+                        mine = LevelConstants.SCLevel3
+                    case "後標":
+                        mine = LevelConstants.SCLevel4
+                    case "底標":
+                        mine = LevelConstants.SCLevel5
+                    default:
+                        mine = -2
+                    }
+                case 3: // 數B
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.MBLevel1
+                    case "前標":
+                        mine = LevelConstants.MBLevel2
+                    case "均標":
+                        mine = LevelConstants.MBLevel3
+                    case "後標":
+                        mine = LevelConstants.MBLevel4
+                    case "底標":
+                        mine = LevelConstants.MBLevel5
+                    default:
+                        mine = -2
+                    }
+                case 2: // 數A
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.MALevel1
+                    case "前標":
+                        mine = LevelConstants.MALevel2
+                    case "均標":
+                        mine = LevelConstants.MALevel3
+                    case "後標":
+                        mine = LevelConstants.MALevel4
+                    case "底標":
+                        mine = LevelConstants.MALevel5
+                    default:
+                        mine = -2
+                    }
+                case 1: // 英文
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.ENLevel1
+                    case "前標":
+                        mine = LevelConstants.ENLevel2
+                    case "均標":
+                        mine = LevelConstants.ENLevel3
+                    case "後標":
+                        mine = LevelConstants.ENLevel4
+                    case "底標":
+                        mine = LevelConstants.ENLevel5
+                    default:
+                        mine = -2
+                    }
+                default: // 國文
+                    switch goal {
+                    case "頂標":
+                        mine = LevelConstants.CHLevel1
+                    case "前標":
+                        mine = LevelConstants.CHLevel2
+                    case "均標":
+                        mine = LevelConstants.CHLevel3
+                    case "後標":
+                        mine = LevelConstants.CHLevel4
+                    case "底標":
+                        mine = LevelConstants.CHLevel5
+                    default:
+                        mine = -2
+                    }
+                }
+                return you > mine // 有篩選再多
+            }
+            
+            // 內嵌 checkAllTestsPassed 邏輯
+            // 檢查學測科目是否通過
+            let passedCH = checkTestPassed(result.GsatCH, 0, department.chinesetest) // 國文
+            let passedEN = checkTestPassed(result.GsatEN, 1, department.englishtest) // 英文
+            let passedMA = checkTestPassed(result.GsatMA, 2, department.mathatest)   // 數A
+            let passedMB = checkTestPassed(result.GsatMB, 3, department.mathbtest)   // 數B
+            let passedSC = checkTestPassed(result.GsatSC, 4, department.sciencetest) // 自然
+            let passedSO = checkTestPassed(result.GsatSO, 5, department.socialtest)  // 社會
+            
+            // MB 和 MA 只需其中一個通過
+            let passedMath = passedMA || passedMB
+            
+            // 所有科目都需通過（數學只需 MA 或 MB 其中一個通過）
+            let passedTests = passedCH && passedEN && passedMath && passedSC && passedSO
+            
+            // 檢查英聽
+            let passedEL: Bool
+            if department.englishlistentest.isEmpty {
+                passedEL = true // 無英聽要求，自動通過
+            } else {
+                switch result.GsatEL {
+                case 3: // A級
+                    passedEL = true
+                case 2: // B級
+                    passedEL = (department.englishlistentest != "A級")
+                case 1: // C級
+                    passedEL = (department.englishlistentest != "A級" && department.englishlistentest != "B級")
+                default: // F級或其他
+                    passedEL = false
+                }
+            }
+            
+            // 新增篩選條件：檢查所有 multiplier > 0 的科目，其分數必須 > 0
+            let passedMultipliers: Bool = {
+                // 學測科目
+                if department.gsatchineseMultiplier > 0 && result.GsatCH < 0 {
+                    return false // 國文採計但未報考
+                }
+                if department.gsatenglishMultiplier > 0 && result.GsatEN < 0 {
+                    return false // 英文採計但未報考
+                }
+                if department.gsatmathaMultiplier > 0 && result.GsatMA < 0 {
+                    return false // 數A採計但未報考
+                }
+                if department.gsatmathbMultiplier > 0 && result.GsatMB < 0 {
+                    return false // 數B採計但未報考
+                }
+                if department.gsatscienceMultiplier > 0 && result.GsatSC < 0 {
+                    return false // 自然採計但未報考
+                }
+                if department.gsatsocialMultiplier > 0 && result.GsatSO < 0 {
+                    return false // 社會採計但未報考
+                }
+                // 分科測驗科目
+                if department.mathaMultiplier > 0 && result.AstMA < 0 {
+                    return false // 數甲採計但未報考
+                }
+                if department.mathbMultiplier > 0 && result.AstMB < 0 {
+                    return false // 數乙採計但未報考
+                }
+                if department.physicsMultiplier > 0 && result.AstPH < 0 {
+                    return false // 物理採計但未報考
+                }
+                if department.chemistryMultiplier > 0 && result.AstCH < 0 {
+                    return false // 化學採計但未報考
+                }
+                if department.biologyMultiplier > 0 && result.AstBI < 0 {
+                    return false // 生物採計但未報考
+                }
+                if department.historyMultiplier > 0 && result.AstHI < 0 {
+                    return false // 歷史採計但未報考
+                }
+                if department.geometryMultiplier > 0 && result.AstGE < 0 {
+                    return false // 地理採計但未報考
+                }
+                if department.socialMultiplier > 0 && result.AstSO < 0 {
+                    return false // 公民採計但未報考
+                }
+                return true // 所有採計科目都報考
+            }()
+            
+            // 學測科目、英聽和 multiplier 條件都需通過
+            return passedTests && passedEL && passedMultipliers
+        }
+        return filteredDepartments
+        
+    }
+    
+    private func analyseCalculate(departments: [Departments], result: UserGrade) async -> [Departments] {
+        return departments.map { department in
+            var newDepartment = department
+            newDepartment.calculatedPercent = directCalculateChance(department: department, grade: editing)
+            return newDepartment
+        }
+    }
+    
+    private func directCalculateChance(department: Departments, grade: UserGrade) -> Double {
+        let departmentScore: Double = (Double(department.resultScore) ?? 1.0) / department.resultTotalMultiplier
+        let candidateScore: Double = (((department.gsatchineseMultiplier * Double(grade.GsatCH) + department.gsatenglishMultiplier * Double(grade.GsatEN) + department.gsatmathaMultiplier * Double(grade.GsatMA) + department.gsatmathbMultiplier * Double(grade.GsatMB) + department.gsatscienceMultiplier * Double(grade.GsatSC) + department.gsatsocialMultiplier * Double(grade.GsatSO) + department.mathaMultiplier * Double(grade.AstMA) + department.mathbMultiplier * Double(grade.AstMB) + department.physicsMultiplier * Double(grade.AstPH) + department.chemistryMultiplier * Double(grade.AstCH) + department.biologyMultiplier * Double(grade.AstBI) + department.historyMultiplier * Double(grade.AstHI) + department.geometryMultiplier * Double(grade.AstGE) + department.socialMultiplier * Double(grade.AstSO)) * ( (Double(grade.SpecialPercentage) / 100 ) + 1 )) / (department.gsatchineseMultiplier + department.gsatenglishMultiplier + department.gsatmathaMultiplier + department.gsatmathbMultiplier + department.gsatscienceMultiplier + department.gsatsocialMultiplier + department.mathaMultiplier + department.mathbMultiplier + department.physicsMultiplier + department.chemistryMultiplier + department.biologyMultiplier + department.historyMultiplier + department.geometryMultiplier + department.socialMultiplier))
+        // let fullScore: Double = 60.0
+        let sigmaFraction: Double = 0.1
+        let sigma = sigmaFraction * departmentScore
+            
+        // 確保 sigma 不為 0
+        guard sigma > 0 else {
+            return candidateScore >= departmentScore ? 1.0 : 0.0
+        }
+        
+        // 計算 z 值
+        let z = (candidateScore - departmentScore) / sigma
+        
+        // 計算標準常態分布的 CDF (normalCDF 的邏輯)
+        let zAbs = abs(z)
+        let p = 0.2316419
+        let a1 = 0.319381530
+        let a2 = -0.356563782
+        let a3 = 1.781477937
+        let a4 = -1.821255978
+        let a5 = 1.330274429
+        
+        let t = 1.0 / (1.0 + p * zAbs)
+        let t2 = t * t
+        let t3 = t2 * t
+        let t4 = t3 * t
+        let t5 = t4 * t
+        
+        let poly = a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5
+        let z2 = zAbs * zAbs
+        let phi = 1.0 - (1.0 / sqrt(2.0 * .pi)) * exp(-z2 / 2.0) * poly
+        
+        // 如果 z < 0，利用對稱性
+        let probability = z < 0 ? 1.0 - phi : phi
+        
+        return probability
+    }
+    
+    private func analyseSortedDepartments(departments: [Departments], result: UserGrade) async -> [Departments] {
+        return departments.sorted {
+            return $0.calculatedPercent > $1.calculatedPercent
+        }
+    }
+    
+    private func analyseStarsDepartments(departments: [Departments], result: UserGrade, percentUp: Double, percentDown: Double) async -> [Departments] {
+        return departments.filter { department in
+            let percent = department.calculatedPercent
+            return percent >= percentDown && percent < percentUp
+        }
+    }
+    
 }
 
 #Preview {
     InputView()
         .environmentObject(UserData())
+        .environmentObject(DepartmentData())
 }

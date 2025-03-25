@@ -8,15 +8,31 @@
 
 /* Begin PBXBuildFile section */
 		734EFBC72D8DB17C0045A879 /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 734EFBC62D8DB17C0045A879 /* SwiftCSV */; };
+		734EFC5C2D91CF3B0045A879 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734EFC5B2D91CF3A0045A879 /* StoreKit.framework */; };
+		734EFC642D91D9350045A879 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 734EFC632D91D9350045A879 /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		734EFB382D8D5E670045A879 /* ast-analysis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ast-analysis.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		734EFC5B2D91CF3A0045A879 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		734EFC682D91DB7B0045A879 /* Exceptions for "ast-analysis" folder in "ast-analysis" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 734EFB372D8D5E670045A879 /* ast-analysis */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		734EFB3A2D8D5E670045A879 /* ast-analysis */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				734EFC682D91DB7B0045A879 /* Exceptions for "ast-analysis" folder in "ast-analysis" target */,
+			);
 			path = "ast-analysis";
 			sourceTree = "<group>";
 		};
@@ -27,7 +43,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				734EFC642D91D9350045A879 /* GoogleMobileAds in Frameworks */,
 				734EFBC72D8DB17C0045A879 /* SwiftCSV in Frameworks */,
+				734EFC5C2D91CF3B0045A879 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				734EFB3A2D8D5E670045A879 /* ast-analysis */,
+				734EFC5A2D91CF3A0045A879 /* Frameworks */,
 				734EFB392D8D5E670045A879 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +67,14 @@
 				734EFB382D8D5E670045A879 /* ast-analysis.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		734EFC5A2D91CF3A0045A879 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				734EFC5B2D91CF3A0045A879 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,6 +98,7 @@
 			name = "ast-analysis";
 			packageProductDependencies = (
 				734EFBC62D8DB17C0045A879 /* SwiftCSV */,
+				734EFC632D91D9350045A879 /* GoogleMobileAds */,
 			);
 			productName = "ast-analysis";
 			productReference = 734EFB382D8D5E670045A879 /* ast-analysis.app */;
@@ -102,6 +130,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				734EFBC52D8DB17C0045A879 /* XCRemoteSwiftPackageReference "SwiftCSV" */,
+				734EFC622D91D9350045A879 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 734EFB392D8D5E670045A879 /* Products */;
@@ -259,11 +288,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"ast-analysis/Preview Content\"";
 				DEVELOPMENT_TEAM = NSPJ9RY42B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ast-analysis/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "分科測驗分析";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -275,7 +305,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangyouci.ast-analysis";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -290,11 +320,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"ast-analysis/Preview Content\"";
 				DEVELOPMENT_TEAM = NSPJ9RY42B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ast-analysis/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "分科測驗分析";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -306,7 +337,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangyouci.ast-analysis";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -347,6 +378,14 @@
 				minimumVersion = 0.10.0;
 			};
 		};
+		734EFC622D91D9350045A879 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -354,6 +393,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 734EFBC52D8DB17C0045A879 /* XCRemoteSwiftPackageReference "SwiftCSV" */;
 			productName = SwiftCSV;
+		};
+		734EFC632D91D9350045A879 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 734EFC622D91D9350045A879 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

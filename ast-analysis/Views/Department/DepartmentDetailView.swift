@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct DepartmentDetailView: View {
     
@@ -36,6 +37,31 @@ struct DepartmentDetailView: View {
             }
             Divider()
             ScrollView{
+                
+                if displayMore {
+                    VStack(alignment: .leading){
+                        HStack(alignment: .center){
+                            Image(systemName: "medal.star")
+                            Text("錄取機率")
+                            Spacer()
+                        }
+                        .bold()
+                        .padding(.bottom, 10)
+                        
+                        Text(String(format: "%.0f%%", department.calculatedPercent * 100))
+                            .font(.title3)
+                            .bold()
+                            .padding(.bottom, 5)
+                        
+                        Text("錄取機率乃基於去年分數算出，建立於常態分布模型。僅供參考，分發入學志願序無需過於斟酌，按自己喜歡的即可")
+                            .font(.caption)
+                            .foregroundStyle(Color(.systemGray2))
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "magnifyingglass")
@@ -156,6 +182,7 @@ struct DepartmentDetailView: View {
                         Image(systemName: "line.3.horizontal.decrease")
                         Text("採計科目")
                         Spacer()
+                        Text("114年")
                     }
                     .bold()
                     .padding(.bottom, 10)
@@ -229,7 +256,7 @@ struct DepartmentDetailView: View {
                         if grade.SpecialPercentage > 0 {
                             Divider()
                             HStack{
-                                Text("加分")
+                                Text("加分總成績")
                                 Spacer()
                                 Text(String(format: "%.2f", totalScore()))
                                 Text("×")
@@ -237,6 +264,16 @@ struct DepartmentDetailView: View {
                                     .frame(width: 50, alignment: .trailing)
                                 Text("=")
                                 Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) ))
+                                    .frame(width: 60, alignment: .trailing)
+                            }
+                            HStack{
+                                Text("加分平均級分")
+                                Spacer()
+                                Text("÷")
+                                Text(String(format: "%.2f", totalMultiplier()))
+                                    .frame(width: 50, alignment: .trailing)
+                                Text("=")
+                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / totalMultiplier()))
                                     .frame(width: 60, alignment: .trailing)
                             }
                         }
@@ -250,13 +287,61 @@ struct DepartmentDetailView: View {
                 
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
+                        Image(systemName: "document.badge.clock")
+                        Text("篩選結果")
+                        Spacer()
+                        Text("113年")
+                    }
+                    .bold()
+                    .padding(.bottom, 10)
+                    if department.resultCombineArray.isEmpty {
+                        Text("無資料")
+                            .foregroundStyle(Color(.systemGray2))
+                    } else {
+                        HStack{
+                            Text("科目")
+                            Spacer()
+                            Text("倍率")
+                        }
+                        .bold()
+                        ForEach(department.resultCombineArray, id: \.0) { subject, score in
+                            HStack{
+                                Text(subject)
+                                Spacer()
+                                Text(String(format: "%.2f", score))
+                            }
+                        }
+                        Divider()
+                        HStack{
+                            Text("最低錄取分數")
+                            Spacer()
+                            Text(String(format: "%.2f", Double(department.resultScore) ?? 1.0))
+                        }
+                        HStack{
+                            Text("平均級分")
+                            Spacer()
+                            Text("÷")
+                            Text(String(format: "%.2f", department.resultTotalMultiplier))
+                                .frame(width: 50, alignment: .trailing)
+                            Text("=")
+                            Text(String(format: "%.2f", (Double(department.resultScore) ?? 1.0) / department.resultTotalMultiplier))
+                                .frame(width: 60, alignment: .trailing)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
                         Image(systemName: "person.crop.rectangle.stack")
                         Text("同分參酌")
                         Spacer()
                     }
                     .bold()
                     .padding(.bottom, 10)
-                    HStack{
+                    FlowLayout{
                         if !department.samecompare1.isEmpty {
                             VStack{
                                 Text(department.samecompare1)
@@ -301,7 +386,12 @@ struct DepartmentDetailView: View {
                     .bold()
                     .padding(.bottom, 10)
                     HStack{
-                        Text(department.info)
+                        if department.info.isEmpty {
+                            Text("無資料")
+                                .foregroundStyle(Color(.systemGray2))
+                        } else {
+                            Text(department.info)
+                        }
                         Spacer()
                     }
                 }
@@ -310,9 +400,9 @@ struct DepartmentDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
-        .padding(20)
+        .padding()
         .navigationTitle(department.fullname)
-        
+        .navigationBarTitleDisplayMode(.inline)
     }
                                  
     private func scoreGenerator(name: String, score: Int, multiplier: Double) -> some View {
@@ -460,7 +550,7 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.SOLevel5
             default:
-                mine = -1
+                mine = -2
             }
         case 4:
             switch goal {
@@ -475,7 +565,7 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.SCLevel5
             default:
-                mine = -1
+                mine = -2
             }
         case 3:
             switch goal {
@@ -490,7 +580,7 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.MBLevel5
             default:
-                mine = -1
+                mine = -2
             }
         case 2:
             switch goal {
@@ -505,7 +595,7 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.MALevel5
             default:
-                mine = -1
+                mine = -2
             }
         case 1:
             switch goal {
@@ -520,7 +610,7 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.ENLevel5
             default:
-                mine = -1
+                mine = -2
             }
         default:
             switch goal {
@@ -535,10 +625,10 @@ struct DepartmentDetailView: View {
             case "底標":
                 mine = LevelConstants.CHLevel5
             default:
-                mine = -1
+                mine = -2
             }
         }
-        return you >= mine
+        return you > mine
     }
     
     private func checkAllTestsPassed(SO: Int, goalSO: String,

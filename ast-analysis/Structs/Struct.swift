@@ -11,8 +11,10 @@ struct User: Identifiable, Codable {
     var id = UUID()
     var name: String = "用戶"
     var type: Int = 0
-    var favDept: [Int] = []
+    var favDept: [Departments] = []
+    var choDept: [Departments?] = Array(repeating: nil, count: 100)
     var grade: [UserGrade] = []
+    var analyzeCount: Int = 0
 }
 
 struct UserGrade: Identifiable, Codable {
@@ -35,4 +37,6 @@ struct UserGrade: Identifiable, Codable {
     var AstSO: Int
     var SpecialType: Int
     var SpecialPercentage: Int
+    // 系統分析
+    var analyse: [[Departments]] = [[]]
 }

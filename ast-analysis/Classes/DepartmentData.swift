@@ -57,7 +57,10 @@ class DepartmentData: ObservableObject {
                     samecompare3: row["samecompare3"] ?? "",
                     samecompare4: row["samecompare4"] ?? "",
                     samecompare5: row["samecompare5"] ?? "",
-                    info: row["info"] ?? ""
+                    info: row["info"] ?? "",
+                    resultCombine: row["resultCombine"] ?? "",
+                    resultPeople: row["resultPeople"] ?? "",
+                    resultScore: row["resultScore"] ?? ""
                 )
                 data.append(department)
             }
