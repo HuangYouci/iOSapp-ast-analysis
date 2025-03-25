@@ -40,3 +40,12 @@ struct UserGrade: Identifiable, Codable {
     // 系統分析
     var analyse: [[Departments]] = [[]]
 }
+
+// pad
+
+struct Window: Identifiable {
+    let id = UUID()
+    var offset: CGSize = .zero
+    var content: AnyView // 儲存視窗的內容
+    var name: String
+}

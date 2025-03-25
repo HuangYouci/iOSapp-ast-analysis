@@ -469,7 +469,7 @@ struct InputView: View {
                     .inputCard()
                     .disabled(editingPage != 3)
                     .onAppear {
-                        if analyseStep == 0 {
+                        if analyseStep == 0 && userData.userData.analyzeCount > 0 {
                             Task {
                                 await analyse()
                                 userData.userData.grade.append(editing)
@@ -478,6 +478,8 @@ struct InputView: View {
                                     editingPage = 4
                                 }
                             }
+                        } else {
+                            editingPage = 0
                         }
                     }
                     VStack(alignment: .center){
@@ -487,7 +489,7 @@ struct InputView: View {
                             Image(systemName: "checkmark.circle")
                                 .font(.largeTitle)
                                 .foregroundStyle(Color(.accent))
-                            Text("完成!")
+                            Text("完成")
                                 .font(.title2)
                                 .bold()
                             Text("資料已登錄，請至分析頁查看分析結果")
@@ -504,6 +506,7 @@ struct InputView: View {
                                     editingPage = 0
                                     isFinished = false
                                 }
+                                analyseStep = 0
                             } label: {
                                 HStack{
                                     Text("關閉此頁")
