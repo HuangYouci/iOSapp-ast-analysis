@@ -170,8 +170,16 @@ struct Departments: Identifiable, Codable {
         
         return result
     }
+    
     var resultTotalMultiplier: Double {
-        resultCombineArray.reduce(0.0) { $0 + $1.1 }
+        let result = resultCombineArray.reduce(0.0) {
+            $0 + ($1.1.isNaN ? 0.0 : $1.1)
+        }
+        if result > 0 {
+            return result
+        } else {
+            return 1.0
+        }
     }
     // 後續計算屬性
     var calculatedPercent: Double = 0
