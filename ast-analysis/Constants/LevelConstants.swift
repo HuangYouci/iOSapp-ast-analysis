@@ -28,7 +28,7 @@ struct LevelConstants {
     // 數學A
     static var MALevel1: Int = 40 // 頂標
     static var MALevel2: Int = 32 // 前標
-    static var MALevel3: Int = 24 // 均標
+    static var MALevel3: Int = 20 // 均標
     static var MALevel4: Int = 12 // 後標
     static var MALevel5: Int = 8  // 底標
 

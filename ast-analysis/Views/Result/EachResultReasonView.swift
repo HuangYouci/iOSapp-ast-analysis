@@ -104,6 +104,30 @@ struct EachResultReasonView: View {
         default:
             break
         }
+        switch department.englishtest {
+        case "頂標":
+            if result.GsatEN <= LevelConstants.ENLevel1 {
+                reason.append("英文未達頂標")
+            }
+        case "前標":
+            if result.GsatEN <= LevelConstants.ENLevel2 {
+                reason.append("英文未達前標")
+            }
+        case "均標":
+            if result.GsatEN <= LevelConstants.ENLevel3 {
+                reason.append("英文未達均標")
+            }
+        case "後標":
+            if result.GsatEN <= LevelConstants.ENLevel4 {
+                reason.append("英文未達後標")
+            }
+        case "底標":
+            if result.GsatEN <= LevelConstants.ENLevel5 {
+                reason.append("英文未達底標")
+            }
+        default:
+            break
+        }
         switch department.mathatest {
         case "頂標":
             if result.GsatMA <= LevelConstants.MALevel1 {

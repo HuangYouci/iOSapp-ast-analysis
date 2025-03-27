@@ -136,6 +136,8 @@ struct ProView: View{
                 }
             }
         }
+        .navigationTitle("付費用戶")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

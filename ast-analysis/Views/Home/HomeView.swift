@@ -23,129 +23,47 @@ struct HomeView: View {
                         .foregroundStyle(Color(.systemGray))
                 }
                 .padding()
-                FlowLayout{
-                    NavigationLink(destination: InputView()){
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("成績輸入")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "square.and.pencil")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
-                        }
-                        .padding()
-                        .frame(width: 350)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(userData.userData.analyzeCount < 1)
-                    NavigationLink(destination: DepartmentListView(departments: userData.userData.favDept, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1), title: "喜愛科系")){
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("喜愛科系")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "heart")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    NavigationLink(destination: ChoiceView()){
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("志願填寫")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "doc.text")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    NavigationLink(destination: ProView()){
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("付費用戶")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "crown")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    if adViewModel.isAdLoaded {
-                        Button{
-                            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let rootViewController = scene.windows.first?.rootViewController {
-                                adViewModel.showAd(from: rootViewController) {
-                                    userData.userData.analyzeCount += 1
-                                }
-                            }
-                        } label: {
+                ScrollView{
+                    FlowLayout{
+                        NavigationLink(destination: InputView()){
                             VStack(alignment: .leading, spacing: 20){
                                 HStack(alignment: .bottom){
-                                    Text("分析次數")
+                                    Text("成績輸入")
                                         .font(.title3)
                                     Spacer()
-                                    Image(systemName: "play.circle")
+                                    Image(systemName: "square.and.pencil")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 25, height: 25)
                                         .foregroundStyle(Color(.accent))
                                 }
-                                Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
+                                Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(userData.userData.analyzeCount < 1)
+                        NavigationLink(destination: DepartmentListView(departments: userData.userData.favDept, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1), title: "喜愛科系")){
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("喜愛科系")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "heart")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
                             }
                             .padding()
                             .frame(width: 170)
@@ -158,20 +76,19 @@ struct HomeView: View {
                             .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
                         .buttonStyle(.plain)
-                    } else {
-                        NavigationLink(destination: MyAdView()){
+                        NavigationLink(destination: ChoiceView()){
                             VStack(alignment: .leading, spacing: 20){
                                 HStack(alignment: .bottom){
-                                    Text("分析次數")
+                                    Text("志願選擇")
                                         .font(.title3)
                                     Spacer()
-                                    Image(systemName: "play.circle")
+                                    Image(systemName: "doc.text")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 25, height: 25)
                                         .foregroundStyle(Color(.accent))
                                 }
-                                Text("觀看廣告以獲得")
+                                Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
                             }
                             .padding()
                             .frame(width: 170)
@@ -184,9 +101,120 @@ struct HomeView: View {
                             .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
                         .buttonStyle(.plain)
+                        NavigationLink(destination: ProView()){
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("付費用戶")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "crown")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
+                            }
+                            .padding()
+                            .frame(width: 170)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        if adViewModel.isAdLoaded {
+                            Button{
+                                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                   let rootViewController = scene.windows.first?.rootViewController {
+                                    adViewModel.showAd(from: rootViewController) {
+                                        userData.userData.analyzeCount += 1
+                                    }
+                                }
+                            } label: {
+                                VStack(alignment: .leading, spacing: 20){
+                                    HStack(alignment: .bottom){
+                                        Text("分析次數")
+                                            .font(.title3)
+                                        Spacer()
+                                        Image(systemName: "play.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 25, height: 25)
+                                            .foregroundStyle(Color(.accent))
+                                    }
+                                    Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
+                                }
+                                .padding()
+                                .frame(width: 170)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            NavigationLink(destination: MyAdView()){
+                                VStack(alignment: .leading, spacing: 20){
+                                    HStack(alignment: .bottom){
+                                        Text("分析次數")
+                                            .font(.title3)
+                                        Spacer()
+                                        Image(systemName: "play.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 25, height: 25)
+                                            .foregroundStyle(Color(.accent))
+                                    }
+                                    Text("觀看廣告以獲得")
+                                }
+                                .padding()
+                                .frame(width: 170)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        NavigationLink(destination: GuessView()){
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("差距分析")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "sparkles")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("以已知成績計算與校系的分數差距")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+                .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
                 Spacer()
                 HStack{
                     Spacer()
@@ -213,198 +241,80 @@ struct HomeView_pad: View {
                         .foregroundStyle(Color(.systemGray))
                 }
                 .padding()
-                FlowLayout{
-                    Button {
-                        if !windows.contains(where: { $0.name == "成績輸入" }) {
-                            windows.append(Window(content: AnyView(InputView()), name: "成績輸入"))
-                        }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("成績輸入")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "square.and.pencil")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
-                        }
-                        .padding()
-                        .frame(width: 350)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(userData.userData.analyzeCount < 1)
-                    Button {
-                        windows.append(Window(content: AnyView(ResultView()), name: "分析結果"))
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("分析結果")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "chart.line.text.clipboard")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text("\(userData.userData.grade.count) 筆分析結果")
-                        }
-                        .padding()
-                        .frame(width: 350)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    Button{
-                        windows.append(Window(content: AnyView(DepartmentListView(departments: userData.userData.favDept, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1), title: "喜愛科系")), name: "喜愛科系"))
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("喜愛科系")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "heart")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    Button {
-                        windows.append(Window(content: AnyView(ChoiceView()), name: "志願填寫"))
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("志願填寫")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "doc.text")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    Button {
-                        if !windows.contains(where: { $0.name == "付費用戶" }) {
-                            windows.append(Window(content: AnyView(ProView()), name: "付費用戶"))
-                        }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("付費用戶")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "crown")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
-                            }
-                            Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
-                        }
-                        .padding()
-                        .frame(width: 170)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    }
-                    .buttonStyle(.plain)
-                    if adViewModel.isAdLoaded {
-                        Button{
-                            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let rootViewController = scene.windows.first?.rootViewController {
-                                adViewModel.showAd(from: rootViewController) {
-                                    userData.userData.analyzeCount += 1
-                                }
-                            }
-                        } label: {
-                            VStack(alignment: .leading, spacing: 20){
-                                HStack(alignment: .bottom){
-                                    Text("分析次數")
-                                        .font(.title3)
-                                    Spacer()
-                                    Image(systemName: "play.circle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 25, height: 25)
-                                        .foregroundStyle(Color(.accent))
-                                }
-                                Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
-                            }
-                            .padding()
-                            .frame(width: 170)
-                            .background(Color(.systemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color(.systemGray6), lineWidth: 2)
-                            )
-                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                        }
-                        .buttonStyle(.plain)
-                    } else {
+                ScrollView{
+                    FlowLayout{
                         Button {
-                            if !windows.contains(where: { $0.name == "廣告" }) {
-                                windows.append(Window(content: AnyView(MyAdView()), name: "廣告"))
+                            if !windows.contains(where: { $0.name == "成績輸入" }) {
+                                windows.append(Window(content: AnyView(InputView()), name: "成績輸入"))
                             }
                         } label: {
                             VStack(alignment: .leading, spacing: 20){
                                 HStack(alignment: .bottom){
-                                    Text("分析次數")
+                                    Text("成績輸入")
                                         .font(.title3)
                                     Spacer()
-                                    Image(systemName: "play.circle")
+                                    Image(systemName: "square.and.pencil")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 25, height: 25)
                                         .foregroundStyle(Color(.accent))
                                 }
-                                Text("觀看廣告以獲得")
+                                Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(userData.userData.analyzeCount < 1)
+                        Button {
+                            windows.append(Window(content: AnyView(ResultView()), name: "分析結果"))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("分析結果")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "chart.line.text.clipboard")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("\(userData.userData.grade.count) 筆分析結果")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        Button{
+                            windows.append(Window(content: AnyView(DepartmentListView(departments: userData.userData.favDept, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1), title: "喜愛科系")), name: "喜愛科系"))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("喜愛科系")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "heart")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
                             }
                             .padding()
                             .frame(width: 170)
@@ -417,36 +327,184 @@ struct HomeView_pad: View {
                             .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
                         .buttonStyle(.plain)
-                    }
-                    Button {
-                        windows.append(Window(content: AnyView(ListView()), name: "校系列表"))
-                    } label: {
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("科系列表")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "list.bullet")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
+                        Button {
+                            windows.append(Window(content: AnyView(ChoiceView()), name: "志願選擇"))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("志願選擇")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "doc.text")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
                             }
-                            Text("開啟科系列表視窗")
+                            .padding()
+                            .frame(width: 170)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
-                        .padding()
-                        .frame(width: 350)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        .buttonStyle(.plain)
+                        Button {
+                            if !windows.contains(where: { $0.name == "付費用戶" }) {
+                                windows.append(Window(content: AnyView(ProView()), name: "付費用戶"))
+                            }
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("付費用戶")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "crown")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
+                            }
+                            .padding()
+                            .frame(width: 170)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        if adViewModel.isAdLoaded {
+                            Button{
+                                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                   let rootViewController = scene.windows.first?.rootViewController {
+                                    adViewModel.showAd(from: rootViewController) {
+                                        userData.userData.analyzeCount += 1
+                                    }
+                                }
+                            } label: {
+                                VStack(alignment: .leading, spacing: 20){
+                                    HStack(alignment: .bottom){
+                                        Text("分析次數")
+                                            .font(.title3)
+                                        Spacer()
+                                        Image(systemName: "play.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 25, height: 25)
+                                            .foregroundStyle(Color(.accent))
+                                    }
+                                    Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
+                                }
+                                .padding()
+                                .frame(width: 170)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Button {
+                                if !windows.contains(where: { $0.name == "廣告" }) {
+                                    windows.append(Window(content: AnyView(MyAdView()), name: "廣告"))
+                                }
+                            } label: {
+                                VStack(alignment: .leading, spacing: 20){
+                                    HStack(alignment: .bottom){
+                                        Text("分析次數")
+                                            .font(.title3)
+                                        Spacer()
+                                        Image(systemName: "play.circle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 25, height: 25)
+                                            .foregroundStyle(Color(.accent))
+                                    }
+                                    Text("觀看廣告以獲得")
+                                }
+                                .padding()
+                                .frame(width: 170)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        Button {
+                            windows.append(Window(content: AnyView(ListView()), name: "校系列表"))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("科系列表")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "list.bullet")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("瀏覽所有大學科系列表")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                        Button {
+                            windows.append(Window(content: AnyView(GuessView()), name: "差距分析"))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("差距分析")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "sparkles")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("以已知成績計算與校系的分數差距")
+                            }
+                            .padding()
+                            .frame(width: 350)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+                .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
                 Spacer()
                 HStack{
                     Spacer()
@@ -508,8 +566,10 @@ struct HomeView_pad: View {
                                             )
                                         }
                                 )
-                            window.content
-                                .frame(width: 380, height: 680)
+                            NavigationStack{
+                                window.content
+                            }
+                            .frame(width: 380, height: 680)
                         }
                         .frame(width: 380, height: 700)
                         .background(Color.white)

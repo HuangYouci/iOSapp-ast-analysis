@@ -26,13 +26,19 @@ struct ContentView: View {
                                 Text("主頁")
                             }
                             .tag(0)
-                        ResultView()
+                        
+                        NavigationStack{
+                            ResultView()
+                        }
                             .tabItem {
                                 Image(systemName: "chart.line.text.clipboard.fill")
                                 Text("結果")
                             }
                             .tag(1)
-                        ListView()
+                        
+                        NavigationStack{
+                            ListView()
+                        }
                             .tabItem {
                                 Image(systemName: "list.bullet")
                                 Text("列表")

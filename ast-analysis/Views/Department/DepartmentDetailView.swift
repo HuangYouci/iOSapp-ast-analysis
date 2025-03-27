@@ -48,14 +48,29 @@ struct DepartmentDetailView: View {
                         .bold()
                         .padding(.bottom, 10)
                         
-                        Text(String(format: "%.0f%%", department.calculatedPercent * 100))
-                            .font(.title3)
-                            .bold()
-                            .padding(.bottom, 5)
-                        
-                        Text("錄取機率乃基於去年分數算出，建立於常態分布模型。僅供參考，分發入學志願序無需過於斟酌，按自己喜歡的即可")
-                            .font(.caption)
-                            .foregroundStyle(Color(.systemGray2))
+                        if department.resultCombineArray.isEmpty {
+                             
+                            Text("?%")
+                                .font(.title3)
+                                .bold()
+                                .padding(.bottom, 5)
+                            
+                            Text("沒有去年的錄取分數，因此無法計算。")
+                                .font(.caption)
+                                .foregroundStyle(Color(.systemGray2))
+                            
+                        } else {
+                            
+                            Text(String(format: "%.0f%%", department.calculatedPercent * 100))
+                                .font(.title3)
+                                .bold()
+                                .padding(.bottom, 5)
+                            
+                            Text("錄取機率乃基於去年分數算出，建立於常態分布模型。僅供參考，分發入學志願序無需過於斟酌，按自己喜歡的即可。")
+                                .font(.caption)
+                                .foregroundStyle(Color(.systemGray2))
+                            
+                        }
                     }
                     .padding()
                     .background(Color(.systemGray6))
@@ -67,7 +82,7 @@ struct DepartmentDetailView: View {
                         Image(systemName: "magnifyingglass")
                         Text("檢定標準")
                         Spacer()
-                        if checkAllTestsPassed(SO: grade.GsatSO, goalSO: department.socialtest, SC: grade.GsatSC, goalSC: department.sciencetest, MB: grade.GsatMB, goalMB: department.mathbtest, MA: grade.GsatMA, goalMA: department.mathatest, EN: grade.GsatEN, goalEN: department.englishtest, CH: grade.GsatCH, goalCH: department.chinesetest) {
+                        if checkAllTestsPassed(SO: grade.GsatSO, goalSO: department.socialtest, SC: grade.GsatSC, goalSC: department.sciencetest, MB: grade.GsatMB, goalMB: department.mathbtest, MA: grade.GsatMA, goalMA: department.mathatest, EN: grade.GsatEN, goalEN: department.englishtest, CH: grade.GsatCH, goalCH: department.chinesetest, EL: grade.GsatEL, goalEL: department.englishlistentest) {
                             Image(systemName: "checkmark.seal.fill")
                                 .foregroundStyle(Color(.green))
                             Text("檢定通過")
@@ -246,10 +261,10 @@ struct DepartmentDetailView: View {
                             Text("平均級分")
                             Spacer()
                             Text("÷")
-                            Text(String(format: "%.2f", totalMultiplier()))
+                            Text(String(format: "%.2f", department.resultTotalMultiplier))
                                 .frame(width: 50, alignment: .trailing)
                             Text("=")
-                            Text(String(format: "%.2f", totalScore() / totalMultiplier()))
+                            Text(String(format: "%.2f", totalScore() / department.resultTotalMultiplier))
                                 .frame(width: 60, alignment: .trailing)
                         }
                         
@@ -270,10 +285,10 @@ struct DepartmentDetailView: View {
                                 Text("加分平均級分")
                                 Spacer()
                                 Text("÷")
-                                Text(String(format: "%.2f", totalMultiplier()))
+                                Text(String(format: "%.2f", department.resultTotalMultiplier))
                                     .frame(width: 50, alignment: .trailing)
                                 Text("=")
-                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / totalMultiplier()))
+                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / department.resultTotalMultiplier))
                                     .frame(width: 60, alignment: .trailing)
                             }
                         }
@@ -332,6 +347,47 @@ struct DepartmentDetailView: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                if displayMore {
+                    VStack(alignment: .leading){
+                        HStack(alignment: .center){
+                            Image(systemName: "sparkles")
+                            Text("差距分析")
+                            Spacer()
+                        }
+                        .bold()
+                        .padding(.bottom, 10)
+                        if let resultScoreValue = Double(department.resultScore) {
+                            let scoreDifference = resultScoreValue - totalScore()
+                            let remainingMultiplier = department.resultTotalMultiplier
+                            
+                            if scoreDifference > 0 {
+                                HStack {
+                                    Text("低於去年最低錄取分數")
+                                    Spacer()
+                                    Text(String(format: "%.2f", scoreDifference))
+                                    Text(String(format: "(%.2f)", scoreDifference / remainingMultiplier))
+                                }
+                            } else {
+                                HStack {
+                                    Text("高於去年最低錄取分數")
+                                    Spacer()
+                                    Text(String(format: "%.2f", -scoreDifference))
+                                    Text(String(format: "(%.2f)", -scoreDifference / remainingMultiplier))
+                                }
+                            }
+                        } else {
+                            HStack {
+                                Text("無去年最低錄取分數資料")
+                                Spacer()
+                                Text("N/A")
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
                 
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
@@ -636,7 +692,8 @@ struct DepartmentDetailView: View {
                                     MB: Int, goalMB: String,
                                     MA: Int, goalMA: String,
                                     EN: Int, goalEN: String,
-                                    CH: Int, goalCH: String) -> Bool {
+                                    CH: Int, goalCH: String,
+                                     EL: Int, goalEL: String) -> Bool {
         // type: 0 國文 1 英文 2 數Ａ 3 數Ｂ 4 自然 5 社會
         
         // 檢查每個科目的成績是否通過指定的 goal
@@ -646,20 +703,21 @@ struct DepartmentDetailView: View {
         let passedMB = checkTestPassed(you: MB, type: 3, goal: goalMB) // 數B
         let passedSC = checkTestPassed(you: SC, type: 4, goal: goalSC) // 自然
         let passedSO = checkTestPassed(you: SO, type: 5, goal: goalSO) // 社會
+        var passedEL = true
+        
+        if ((goalEL == "A級") && (EL != 3)) { passedEL = false }
+        if ((goalEL == "B級") && (EL == 0 || EL == 1)) { passedEL = false }
+        if ((goalEL == "C級") && (EL == 0)) { passedEL = false }
         
         // MB 和 MA 只需其中一個通過
         let passedMath = passedMA || passedMB
         
         // 所有科目都需通過（數學只需 MA 或 MB 其中一個通過）
-        return passedCH && passedEN && passedMath && passedSC && passedSO
+        return passedCH && passedEN && passedMath && passedSC && passedSO && passedEL
     }
     
     private func totalScore() -> Double {
         return (department.gsatchineseMultiplier * Double(grade.GsatCH) + department.gsatenglishMultiplier * Double(grade.GsatEN) + department.gsatmathaMultiplier * Double(grade.GsatMA) + department.gsatmathbMultiplier * Double(grade.GsatMB) + department.gsatscienceMultiplier * Double(grade.GsatSC) + department.gsatsocialMultiplier * Double(grade.GsatSO) + department.mathaMultiplier * Double(grade.AstMA) + department.mathbMultiplier * Double(grade.AstMB) + department.physicsMultiplier * Double(grade.AstPH) + department.chemistryMultiplier * Double(grade.AstCH) + department.biologyMultiplier * Double(grade.AstBI) + department.historyMultiplier * Double(grade.AstHI) + department.geometryMultiplier * Double(grade.AstGE) + department.socialMultiplier * Double(grade.AstSO))
-    }
-    
-    private func totalMultiplier() -> Double {
-        return (department.gsatchineseMultiplier + department.gsatenglishMultiplier + department.gsatmathaMultiplier + department.gsatmathbMultiplier + department.gsatscienceMultiplier + department.gsatsocialMultiplier + department.mathaMultiplier + department.mathbMultiplier + department.physicsMultiplier + department.chemistryMultiplier + department.biologyMultiplier + department.historyMultiplier + department.geometryMultiplier + department.socialMultiplier)
     }
     
 }
