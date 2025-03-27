@@ -357,31 +357,37 @@ struct DepartmentDetailView: View {
                         }
                         .bold()
                         .padding(.bottom, 10)
+                        
                         if let resultScoreValue = Double(department.resultScore) {
-                            let scoreDifference = ( resultScoreValue / department.resultTotalMultiplier )  - ( totalScore() / totalMultiplier() )
+                            let resultScoreAverage = resultScoreValue / department.resultTotalMultiplier
+                            let resultScoreToNow = resultScoreAverage * totalMultiplier() // 去年分數轉換今年總分
+                            let scoreDiff = resultScoreToNow - totalScore() // 差距總分
+                            let scoreAverageDiff = scoreDiff / totalMultiplier() // 差距平均
                             
-                            if scoreDifference > 0 {
+                            if scoreDiff > 0 {
                                 HStack {
-                                    Text("相較去年最低錄取分數")
+                                    Text("低於去年最低錄取分數")
                                     Spacer()
-                                    Text("平均級分低")
-                                    Text(String(format: "%.2f", scoreDifference))
+                                    Text(String(format: "%.2f", scoreDiff))
+                                    Text(String(format: "(%.2f)", scoreAverageDiff))
                                 }
                             } else {
                                 HStack {
-                                    Text("相較去年最低錄取分數")
+                                    Text("高於去年最低錄取分數")
                                     Spacer()
-                                    Text("平均級分高")
-                                    Text(String(format: "%.2f", -scoreDifference))
+                                    Text(String(format: "%.2f", -scoreDiff))
+                                    Text(String(format: "(%.2f)", -scoreAverageDiff))
                                 }
                             }
+                            
                         } else {
                             HStack {
-                                Text("無去年最低錄取分數")
+                                Text("無去年最低錄取分數資料")
                                 Spacer()
                                 Text("N/A")
                             }
                         }
+                        
                     }
                     .padding()
                     .background(Color(.systemGray6))

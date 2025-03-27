@@ -835,21 +835,35 @@ struct GuessRowView: View {
                     .padding(.vertical, 2)
                     
                     if let resultScoreValue = Double(department.resultScore) {
-                        let scoreDifference = ( resultScoreValue / department.resultTotalMultiplier ) - ( totalScore() / totalMultiplier() )
+                        let resultScoreAverage = resultScoreValue / department.resultTotalMultiplier
+                        let resultScoreToNow = resultScoreAverage * totalMultiplier() // 去年分數轉換今年總分
+                        let scoreDiff = resultScoreToNow - totalScore() // 差距總分
+                        let scoreAverageDiff = scoreDiff / (totalMultiplier() - currentTotalMultiplier()) // 差距平均
                         
-                        if scoreDifference > 0 {
-                            HStack {
-                                Text("剩餘科目再考")
+                        if (totalMultiplier() == currentTotalMultiplier()){
+                            HStack{
+                                Text("科系要求之科目皆已有成績")
                                 Spacer()
-                                Text(String(format: "(%.2f)", scoreDifference))
+                                Text("不適用差距分析")
                             }
                         } else {
-                            HStack {
-                                Text("現有分數已超越錄取分數")
-                                Spacer()
-                                Text(String(format: "(%.2f)", -scoreDifference))
+                            if scoreDiff > 0 {
+                                HStack {
+                                    Text("現有分數對錄取分數尚缺")
+                                    Spacer()
+                                    Text(String(format: "%.2f", scoreDiff))
+                                    Text(String(format: "(%.2f)", scoreAverageDiff))
+                                }
+                            } else {
+                                HStack {
+                                    Text("現有分數已超越錄取分數")
+                                    Spacer()
+                                    Text(String(format: "%.2f", -scoreDiff))
+                                    Text(String(format: "(%.2f)", -scoreAverageDiff))
+                                }
                             }
                         }
+                        
                     } else {
                         HStack {
                             Text("無去年最低錄取分數資料")
