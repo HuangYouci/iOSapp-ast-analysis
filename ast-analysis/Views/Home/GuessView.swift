@@ -835,30 +835,19 @@ struct GuessRowView: View {
                     .padding(.vertical, 2)
                     
                     if let resultScoreValue = Double(department.resultScore) {
-                        let scoreDifference = resultScoreValue - totalScore()
-                        let remainingMultiplier = department.resultTotalMultiplier - currentTotalMultiplier()
+                        let scoreDifference = ( resultScoreValue / department.resultTotalMultiplier ) - ( totalScore() / totalMultiplier() )
                         
                         if scoreDifference > 0 {
                             HStack {
                                 Text("剩餘科目再考")
                                 Spacer()
-                                Text(String(format: "%.2f", scoreDifference))
-                                if remainingMultiplier > 0 {
-                                    Text(String(format: "(%.2f)", scoreDifference / remainingMultiplier))
-                                } else {
-                                    Text("(無剩餘科目)")
-                                }
+                                Text(String(format: "(%.2f)", scoreDifference))
                             }
                         } else {
                             HStack {
                                 Text("現有分數已超越錄取分數")
                                 Spacer()
-                                Text(String(format: "%.2f", -scoreDifference))
-                                if remainingMultiplier > 0 {
-                                    Text(String(format: "(%.2f)", -scoreDifference / remainingMultiplier))
-                                } else {
-                                    Text("(已達標)")
-                                }
+                                Text(String(format: "(%.2f)", -scoreDifference))
                             }
                         }
                     } else {

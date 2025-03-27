@@ -261,10 +261,10 @@ struct DepartmentDetailView: View {
                             Text("平均級分")
                             Spacer()
                             Text("÷")
-                            Text(String(format: "%.2f", department.resultTotalMultiplier))
+                            Text(String(format: "%.2f", totalMultiplier()))
                                 .frame(width: 50, alignment: .trailing)
                             Text("=")
-                            Text(String(format: "%.2f", totalScore() / department.resultTotalMultiplier))
+                            Text(String(format: "%.2f", totalScore() / totalMultiplier()))
                                 .frame(width: 60, alignment: .trailing)
                         }
                         
@@ -288,7 +288,7 @@ struct DepartmentDetailView: View {
                                 Text(String(format: "%.2f", department.resultTotalMultiplier))
                                     .frame(width: 50, alignment: .trailing)
                                 Text("=")
-                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / department.resultTotalMultiplier))
+                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / totalMultiplier()))
                                     .frame(width: 60, alignment: .trailing)
                             }
                         }
@@ -358,27 +358,26 @@ struct DepartmentDetailView: View {
                         .bold()
                         .padding(.bottom, 10)
                         if let resultScoreValue = Double(department.resultScore) {
-                            let scoreDifference = resultScoreValue - totalScore()
-                            let remainingMultiplier = department.resultTotalMultiplier
+                            let scoreDifference = ( resultScoreValue / department.resultTotalMultiplier )  - ( totalScore() / totalMultiplier() )
                             
                             if scoreDifference > 0 {
                                 HStack {
-                                    Text("低於去年最低錄取分數")
+                                    Text("相較去年最低錄取分數")
                                     Spacer()
+                                    Text("平均級分低")
                                     Text(String(format: "%.2f", scoreDifference))
-                                    Text(String(format: "(%.2f)", scoreDifference / remainingMultiplier))
                                 }
                             } else {
                                 HStack {
-                                    Text("高於去年最低錄取分數")
+                                    Text("相較去年最低錄取分數")
                                     Spacer()
+                                    Text("平均級分高")
                                     Text(String(format: "%.2f", -scoreDifference))
-                                    Text(String(format: "(%.2f)", -scoreDifference / remainingMultiplier))
                                 }
                             }
                         } else {
                             HStack {
-                                Text("無去年最低錄取分數資料")
+                                Text("無去年最低錄取分數")
                                 Spacer()
                                 Text("N/A")
                             }
@@ -718,6 +717,10 @@ struct DepartmentDetailView: View {
     
     private func totalScore() -> Double {
         return (department.gsatchineseMultiplier * Double(grade.GsatCH) + department.gsatenglishMultiplier * Double(grade.GsatEN) + department.gsatmathaMultiplier * Double(grade.GsatMA) + department.gsatmathbMultiplier * Double(grade.GsatMB) + department.gsatscienceMultiplier * Double(grade.GsatSC) + department.gsatsocialMultiplier * Double(grade.GsatSO) + department.mathaMultiplier * Double(grade.AstMA) + department.mathbMultiplier * Double(grade.AstMB) + department.physicsMultiplier * Double(grade.AstPH) + department.chemistryMultiplier * Double(grade.AstCH) + department.biologyMultiplier * Double(grade.AstBI) + department.historyMultiplier * Double(grade.AstHI) + department.geometryMultiplier * Double(grade.AstGE) + department.socialMultiplier * Double(grade.AstSO))
+    }
+    
+    private func totalMultiplier() -> Double {
+        return (department.gsatchineseMultiplier + department.gsatenglishMultiplier + department.gsatmathaMultiplier + department.gsatmathbMultiplier + department.gsatscienceMultiplier + department.gsatsocialMultiplier + department.mathaMultiplier + department.mathbMultiplier + department.physicsMultiplier + department.chemistryMultiplier + department.biologyMultiplier + department.historyMultiplier + department.geometryMultiplier + department.socialMultiplier)
     }
     
 }
