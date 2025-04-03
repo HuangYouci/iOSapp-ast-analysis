@@ -12,6 +12,7 @@ struct HomeView: View {
     @EnvironmentObject private var iapManager: IAPManager
     @StateObject private var adViewModel = RewardedAdViewModel()
     @State private var screenWidth: CGFloat = 400
+    @State private var easterEggClickTimes: Int = 0
     
     var body: some View {
         NavigationStack{
@@ -24,6 +25,9 @@ struct HomeView: View {
                         .foregroundStyle(Color(.systemGray))
                 }
                 .padding()
+                .onTapGesture{
+                    easterEggClickTimes += 1
+                }
                 ScrollView{
                     FlowLayout{
                         NavigationLink(destination: InputView()){
@@ -212,6 +216,49 @@ struct HomeView: View {
                             .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
                         .buttonStyle(.plain)
+                        if (easterEggClickTimes > 14) {
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("程式版本")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "info.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("\(LevelConstants.programVersion) (\(LevelConstants.dataVersion) 年)")
+                            }
+                            .padding()
+                            .frame(width: (screenWidth - 32 ) / 2 - 5 )
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("程式資訊")
+                                        .font(.title3)
+                                    Spacer()
+                                    Text("\(easterEggClickTimes)")
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("由 YC DEV 開發")
+                            }
+                            .padding()
+                            .frame(width: (screenWidth - 32 ) / 2 - 5 )
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
                     }
                     .padding()
                 }
