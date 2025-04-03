@@ -10,6 +10,7 @@ import SwiftUI
 struct ResultView: View {
     
     @EnvironmentObject private var userData: UserData
+    @State private var screenWidth: CGFloat = 400
     
     var body: some View {
         VStack(alignment: .leading){
@@ -151,15 +152,33 @@ struct ResultView: View {
                                     }
                                 }
                             }
-                            .scoreCard()
-                            .padding(.horizontal)
+                            .padding()
+                            .frame(width: screenWidth - 32)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.top, 10)
+                .padding()
             }
             Spacer()
+            GeometryReader{ geometry in
+                HStack{
+                    Spacer()
+                }
+                .onAppear {
+                    DispatchQueue.main.async {
+                        screenWidth = geometry.size.width
+                    }
+                }
+            }
+            .frame(height: 0)
         }
         .navigationTitle("分析結果")
         .toolbar(.hidden)

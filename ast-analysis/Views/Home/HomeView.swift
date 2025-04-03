@@ -11,6 +11,7 @@ struct HomeView: View {
     @EnvironmentObject private var userData: UserData
     @EnvironmentObject private var iapManager: IAPManager
     @StateObject private var adViewModel = RewardedAdViewModel()
+    @State private var screenWidth: CGFloat = 400
     
     var body: some View {
         NavigationStack{
@@ -40,7 +41,7 @@ struct HomeView: View {
                                 Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -66,7 +67,7 @@ struct HomeView: View {
                                 Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 5 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -91,7 +92,7 @@ struct HomeView: View {
                                 Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 5 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -116,7 +117,7 @@ struct HomeView: View {
                                 Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 5 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -149,7 +150,7 @@ struct HomeView: View {
                                     Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
                                 }
                                 .padding()
-                                .frame(width: 170)
+                                .frame(width: (screenWidth - 32 ) / 2 - 5 )
                                 .background(Color(.systemBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .overlay(
@@ -201,7 +202,7 @@ struct HomeView: View {
                                 Text("以已知成績計算與校系的分數差距")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -212,13 +213,21 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(.horizontal)
+                    .padding()
                 }
                 .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
                 Spacer()
-                HStack{
-                    Spacer()
+                GeometryReader{ geometry in
+                    HStack{
+                        Spacer()
+                    }
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            screenWidth = geometry.size.width
+                        }
+                    }
                 }
+                .frame(height: 0)
             }
         }
     }
@@ -229,6 +238,7 @@ struct HomeView_pad: View {
     @EnvironmentObject private var iapManager: IAPManager
     @StateObject private var adViewModel = RewardedAdViewModel()
     @State private var windows: [Window] = []
+    @State private var screenWidth: CGFloat = 0
     
     var body: some View {
         HStack{
@@ -262,7 +272,7 @@ struct HomeView_pad: View {
                                 Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -290,7 +300,7 @@ struct HomeView_pad: View {
                                 Text("\(userData.userData.grade.count) 筆分析結果")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -317,7 +327,7 @@ struct HomeView_pad: View {
                                 Text("共有 \(userData.userData.favDept.count) 個喜愛科系")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 6 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -344,7 +354,7 @@ struct HomeView_pad: View {
                                 Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100 志願")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 6 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -373,7 +383,7 @@ struct HomeView_pad: View {
                                 Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
                             }
                             .padding()
-                            .frame(width: 170)
+                            .frame(width: (screenWidth - 32 ) / 2 - 6 )
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -406,7 +416,7 @@ struct HomeView_pad: View {
                                     Text(adViewModel.isAdLoaded ? "觀看廣告以獲得" : "廣告尚未準備好")
                                 }
                                 .padding()
-                                .frame(width: 170)
+                                .frame(width: (screenWidth - 32 ) / 2 - 6 )
                                 .background(Color(.systemBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .overlay(
@@ -436,7 +446,7 @@ struct HomeView_pad: View {
                                     Text("觀看廣告以獲得")
                                 }
                                 .padding()
-                                .frame(width: 170)
+                                .frame(width: (screenWidth - 32 ) / 2 - 6 )
                                 .background(Color(.systemBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .overlay(
@@ -464,7 +474,7 @@ struct HomeView_pad: View {
                                 Text("瀏覽所有大學科系列表")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -491,7 +501,7 @@ struct HomeView_pad: View {
                                 Text("以已知成績計算與校系的分數差距")
                             }
                             .padding()
-                            .frame(width: 350)
+                            .frame(width: screenWidth - 32)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(
@@ -506,9 +516,17 @@ struct HomeView_pad: View {
                 }
                 .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
                 Spacer()
-                HStack{
-                    Spacer()
+                GeometryReader{ geometry in
+                    HStack{
+                        Spacer()
+                    }
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            screenWidth = geometry.size.width
+                        }
+                    }
                 }
+                .frame(height: 0)
             }
             .frame(width: UIScreen.main.bounds.width * 0.35)
             GeometryReader { geometry in

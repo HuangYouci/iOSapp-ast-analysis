@@ -32,7 +32,7 @@ struct ContentView: View {
                         }
                             .tabItem {
                                 Image(systemName: "chart.line.text.clipboard.fill")
-                                Text("結果")
+                                Text("分析")
                             }
                             .tag(1)
                         
@@ -41,7 +41,7 @@ struct ContentView: View {
                         }
                             .tabItem {
                                 Image(systemName: "list.bullet")
-                                Text("列表")
+                                Text("清單")
                             }
                             .tag(2)
                     }
@@ -53,5 +53,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(UserData())
 }
 
