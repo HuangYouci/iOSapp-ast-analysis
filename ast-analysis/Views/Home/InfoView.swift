@@ -1,16 +1,14 @@
 //
-//  ChoiceView.swift
+//  InfoView.swift
 //  ast-analysis
 //
-//  Created by 黃宥琦 on 2025/3/25.
+//  Created by 黃宥琦 on 2025/4/12.
 //
 
 import SwiftUI
 
-struct ChoiceView: View {
-    
+struct InfoView: View{
     @EnvironmentObject private var userData: UserData
-    
     var body: some View {
         VStack(spacing: 0){
             
@@ -24,23 +22,16 @@ struct ChoiceView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         VStack{
-                            Text("已填寫志願")
+                            Text("程式版本")
                                 .font(.caption)
-                            Text("\(userData.userData.choDept.compactMap { $0 }.count) / 100")
+                            Text("\(LevelConstants.programVersion)")
                             .font(.title3)
                             .bold()
-                            .lineLimit(1)
                         }
                         VStack{
-                            Text("第一志願")
+                            Text("資料版本")
                                 .font(.caption)
-                            Text({
-                                if let department = userData.userData.choDept[0] {
-                                    return department.fullname
-                                } else {
-                                    return "尚未設置"
-                                }
-                            }())
+                            Text("\(LevelConstants.dataVersion)年")
                             .font(.title3)
                             .bold()
                         }
@@ -66,30 +57,21 @@ struct ChoiceView: View {
                 Color.clear
                     .padding(.bottom, 5)
                 
-                ForEach(0..<100){ i in
-                    if let department = userData.userData.choDept[i] {
-                        HStack{
-                            Text("#\(i+1)")
-                                .frame(width: 40)
-                            DepartmentListRowView(department: department, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1))
-                        }
-                        .padding(.horizontal)
-                    }
-                }
-                HStack{
-                    Spacer()
-                }
+                Text("感謝您使用本程式，本程式是由 YC DEV 所開發之分科測驗分析，可協助您檢閱與分析分科測驗校系資料。資料源自大學考試入學分發委員會，且僅供參考，最新資料以官方為主。使用本程式代表您已同意使用者條款 ( https://huangyouci.github.io/app/eula ) 與隱私權政策 ( https://huangyouci.github.io/app/privacypolicy )，若有其他問題，可來信開發者信箱 ( ycdev@icloud.com )。本程式的版本是 \(LevelConstants.programVersion)，資料年份是 \(LevelConstants.dataVersion) 年。")
+                .padding(.horizontal)
+                
             }
             .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
             .background(Color(.secondarySystemBackground))
             
         }
-        .navigationTitle("志願選填")
+        .navigationTitle("程式資訊")
         .navigationBarTitleDisplayMode(.inline)
+        
     }
 }
 
-#Preview {
-    ChoiceView()
+#Preview{
+    InfoView()
         .environmentObject(UserData())
 }

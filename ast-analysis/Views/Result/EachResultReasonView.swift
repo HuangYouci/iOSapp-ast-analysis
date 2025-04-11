@@ -24,52 +24,91 @@ struct EachResultReasonView: View {
             return !checkAvailablity(department: $0).isEmpty
         }
         
-        VStack(alignment: .leading){
-            VStack(alignment: .leading){
-                Text("未通過檢定之校系")
-                    .font(.largeTitle)
-                    .bold()
-                Text("未符合 \(nopass.count) 個校系的選填條件")
-                    .foregroundStyle(Color(.systemGray))
-                ScrollView{
-                    LazyVStack{
-                        
-                        ForEach(nopass){ item in
-                            NavigationLink(destination: DepartmentDetailView(department: item, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1))){
-                                VStack(alignment: .leading){
+        VStack(spacing: 0){
+            
+            HStack{
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 1)
+            
+            VStack{
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        VStack{
+                            Text("校系數量")
+                                .font(.caption)
+                            Text("\(departmentData.departments.count)")
+                            .font(.title3)
+                            .bold()
+                        }
+                        VStack{
+                            Text("不符合校系數")
+                                .font(.caption)
+                            Text("\(nopass.count)")
+                                .font(.title3)
+                                .bold()
+                        }
+                        Spacer()
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 10)
+                .background(Color(.systemBackground))
+                .clipShape(
+                    .rect(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 20,
+                        bottomTrailingRadius: 20,
+                        topTrailingRadius: 0
+                    )
+                )
+            }
+            .background(Color(.secondarySystemBackground))
+            
+            
+            ScrollView{
+                Color.clear
+                    .padding(.bottom, 5)
+                LazyVStack{
+                    
+                    ForEach(nopass){ item in
+                        NavigationLink(destination: DepartmentDetailView(department: item, grade: UserGrade(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, dataName: "無資料", GsatCH: -1, GsatEN: -1, GsatMA: -1, GsatMB: -1, GsatSO: -1, GsatSC: -1, GsatEL: -1, AstMA: -1, AstMB: -1, AstPH: -1, AstCH: -1, AstBI: -1, AstHI: -1, AstGE: -1, AstSO: -1, SpecialType: -1, SpecialPercentage: -1))){
+                            VStack(alignment: .leading){
+                                HStack{
+                                    Text(item.fullname)
+                                    Spacer()
+                                }
+                                Divider()
+                                ScrollView(.horizontal, showsIndicators: false){
                                     HStack{
-                                        Text(item.fullname)
-                                        Spacer()
-                                    }
-                                    Divider()
-                                    ScrollView(.horizontal, showsIndicators: false){
-                                        HStack{
-                                            ForEach(checkAvailablity(department: item), id: \.self){ reason in
-                                                HStack{
-                                                    Image(systemName: "exclamationmark.triangle.fill")
-                                                    Text(reason)
-                                                }
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        ForEach(checkAvailablity(department: item), id: \.self){ reason in
+                                            HStack{
+                                                Image(systemName: "exclamationmark.triangle.fill")
+                                                Text(reason)
                                             }
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
                                         }
                                     }
                                 }
-                                .padding()
-                                .background(Color(.systemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color(.systemGray6), lineWidth: 2)
-                                )
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .padding(.horizontal)
                         }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
-            .padding()
+            .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+            .background(Color(.secondarySystemBackground))
             
         }
         .navigationTitle("未通過檢定之校系")

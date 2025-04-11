@@ -1,7 +1,5 @@
 import SwiftUI
 
-import SwiftUI
-
 struct FlowLayout: Layout {
     var horizontalSpacing: CGFloat // 橫向間距
     var verticalSpacing: CGFloat   // 縱向間距

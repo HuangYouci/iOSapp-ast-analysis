@@ -33,56 +33,104 @@ struct DepartmentListView: View {
     }
     
     var body: some View{
-        VStack(alignment: .leading){
-            VStack(alignment: .leading){
+        VStack(alignment: .leading, spacing: 0){
+            
+            HStack{
                 Text(title)
                     .font(.largeTitle)
                     .bold()
-                HStack{
-                    if searchText.isEmpty {
-                        Text("共 \(filteredDepartments.count) 個校系")
-                            .foregroundStyle(Color(.systemGray))
-                    } else {
-                        Text("搜尋「\(searchText)」共 \(filteredDepartments.count) 個校系")
-                            .foregroundStyle(Color(.systemGray))
-                    }
-                    if searchFilter.count > 0 {
-                        Text("（已啟用 \(searchFilter.count) 個篩選）")
-                            .foregroundStyle(Color(.systemGray))
-                    }
-                }
-                .lineLimit(1)
-            }
-            .padding()
-            
-            HStack{
-                TextField("搜尋關鍵字或代碼", text: $searchText)
-                    .padding(10)
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color(.systemGray6), lineWidth: 2)
-                    )
-                Button {
-                    showFilter = true
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                        .padding(10)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                }
+                Spacer()
             }
             .padding(.horizontal)
+            .padding(.bottom, 10)
+            
+            VStack{
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        VStack{
+                            Text("校系數量")
+                                .font(.caption)
+                            Text("\(departments.count)")
+                            .font(.title3)
+                            .bold()
+                        }
+                        
+                        if (filteredDepartments.count < departments.count){
+                            VStack{
+                                Text("已篩選校系")
+                                    .font(.caption)
+                                Text("\(filteredDepartments.count)")
+                                    .font(.title3)
+                                    .bold()
+                            }
+                        }
+                        if (!searchText.isEmpty) {
+                            VStack{
+                                Text("搜尋字詞")
+                                    .font(.caption)
+                                Text("\(searchText)")
+                                    .font(.title3)
+                                    .bold()
+                                    .lineLimit(1)
+                            }
+                        }
+                        if searchFilter.count > 0 {
+                            VStack{
+                                Text("篩選器")
+                                    .font(.caption)
+                                Text("\(searchFilter.count)")
+                                    .font(.title3)
+                                    .bold()
+                            }
+                        }
+                        Spacer()
+                        
+                    }
+                    HStack{
+                        TextField("搜尋關鍵字或代碼", text: $searchText)
+                            .padding(10)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                        Button {
+                            showFilter = true
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .padding(10)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 10)
+                .background(Color(.systemBackground))
+                .clipShape(
+                    .rect(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 20,
+                        bottomTrailingRadius: 20,
+                        topTrailingRadius: 0
+                    )
+                )
+            }
+            .background(Color(.secondarySystemBackground))
             
             ScrollView {
+                
+                Color.clear
+                .padding(.bottom, 5)
+                
                 LazyVStack{
                     ForEach(filteredDepartments) { department in
                         DepartmentListRowView(department: department, grade: grade)
@@ -90,6 +138,8 @@ struct DepartmentListView: View {
                 }
                 .padding()
             }
+            .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+            .background(Color(.secondarySystemBackground))
         }
         .sheet(isPresented: $showFilter){
             DepartmentListFilterView(searchFilter: $searchFilter)
@@ -265,10 +315,7 @@ struct DepartmentListRowView: View {
             .padding()
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color(.systemGray6), lineWidth: 2)
-            )
+            .shadow(color: Color(.label).opacity(0.1),radius: 5)
             .contextMenu {
                 Button(action: {
                     if userData.userData.favDept.contains(where: { $0.id == department.id }) {

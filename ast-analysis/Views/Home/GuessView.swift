@@ -11,41 +11,68 @@ struct GuessView: View {
     @EnvironmentObject private var userData: UserData
     @EnvironmentObject private var departmentData: DepartmentData
     
-    @State private var screenWidth: CGFloat = 400
-    
     var body: some View {
-        VStack(alignment: .leading){
+        VStack(alignment: .leading, spacing: 0){
             
-            VStack(alignment: .leading){
-                Text("差距分析")
-                    .font(.largeTitle)
-                    .bold()
-                Text("預測分科要考幾級才會上")
-                    .foregroundStyle(Color(.systemGray))
+            HStack{
+                Spacer()
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom, 1)
+            
             VStack{
-                HStack{
-                    Image(systemName: "info.circle")
-                    Text("本功能是計算您在現有成績與目標校系的尚缺分數差異。")
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        VStack{
+                            Text("分析結果")
+                                .font(.caption)
+                            Text("\(userData.userData.grade.count)")
+                            .font(.title3)
+                            .bold()
+                        }
+                        Spacer()
+                    }
                 }
-                Divider()
-                    .padding(.vertical, 3)
-                Text("若要在分科考前以既有學測成績分析差距，請在「成績輸入」處輸入一個「僅有學測成績（轉換六十幾分制）」的資料，並產生結果，再到者裡選擇該分析結果。")
-                    .font(.caption)
-                    .foregroundStyle(Color(.systemGray2))
-            }
-                .padding()
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(.systemGray6), lineWidth: 2)
-                )
-                .shadow(color: Color(.label).opacity(0.1),radius: 5)
                 .padding(.horizontal)
+                .padding(.bottom, 10)
+                .background(Color(.systemBackground))
+                .clipShape(
+                    .rect(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 20,
+                        bottomTrailingRadius: 20,
+                        topTrailingRadius: 0
+                    )
+                )
+            }
+            .background(Color(.secondarySystemBackground))
             
             ScrollView{
+                
+                Color.clear
+                    .padding(.bottom, 5)
+                
+                VStack{
+                    HStack{
+                        Image(systemName: "info.circle")
+                        Text("本功能是計算您在現有成績與目標校系的尚缺分數差異。")
+                    }
+                    Divider()
+                        .padding(.vertical, 3)
+                    Text("若要在分科考前以既有學測成績分析差距，請在「成績輸入」處輸入一個「僅有學測成績（轉換六十幾分制）」的資料，並產生結果，再到者裡選擇該分析結果。")
+                        .font(.caption)
+                        .foregroundStyle(Color(.systemGray2))
+                }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color(.systemGray6), lineWidth: 2)
+                    )
+                    .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                    .padding(.horizontal)
+                
                 if userData.userData.grade.isEmpty {
                     HStack{
                         Spacer()
@@ -63,162 +90,150 @@ struct GuessView: View {
                     .shadow(color: Color(.label).opacity(0.1),radius: 5)
                     .padding(.horizontal)
                 }
-                FlowLayout{
-                    ForEach(userData.userData.grade) { item in
-                        NavigationLink(destination: GuessDetailView(grade: item)) {
-                            VStack(alignment: .leading){
+                ForEach(userData.userData.grade) { item in
+                    NavigationLink(destination: GuessDetailView(grade: item)) {
+                        VStack(alignment: .leading){
+                            HStack{
+                                Text(item.dataName)
+                                    .font(.title3)
+                                    .bold()
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(Color(.systemGray2))
+                            }
+                            Divider()
+                                .padding(.bottom, 5)
+                            ScrollView(.horizontal){
                                 HStack{
-                                    Text(item.dataName)
-                                        .font(.title3)
-                                        .bold()
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundStyle(Color(.systemGray2))
-                                }
-                                Divider()
-                                    .padding(.bottom, 5)
-                                ScrollView(.horizontal){
-                                    HStack{
-                                        
-                                        if item.GsatCH >= 0 {
-                                            Text("國文 \(item.GsatCH)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatEN >= 0 {
-                                            Text("英文 \(item.GsatEN)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatMA >= 0 {
-                                            Text("數Ａ \(item.GsatMA)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatMB >= 0 {
-                                            Text("數Ｂ \(item.GsatMB)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatSC >= 0 {
-                                            Text("自然 \(item.GsatSC)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatSO >= 0 {
-                                            Text("社會 \(item.GsatSO)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.GsatEL >= 0 {
-                                            switch item.GsatEL {
-                                            case 3:
-                                                Text("英聽 A")
-                                                    .padding(5)
-                                                    .background(Color(.systemGray5))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                                            case 2:
-                                                Text("英聽 B")
-                                                    .padding(5)
-                                                    .background(Color(.systemGray5))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                                            case 1:
-                                                Text("英聽 C")
-                                                    .padding(5)
-                                                    .background(Color(.systemGray5))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                                            default:
-                                                Text("英聽 F")
-                                                    .padding(5)
-                                                    .background(Color(.systemGray5))
-                                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                                            }
-                                        }
-                                        if item.AstMA >= 0 {
-                                            Text("數甲 \(item.AstMA)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstMB >= 0 {
-                                            Text("數乙 \(item.AstMB)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstPH >= 0 {
-                                            Text("物理 \(item.AstPH)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstCH >= 0 {
-                                            Text("化學 \(item.AstCH)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstBI >= 0 {
-                                            Text("生物 \(item.AstBI)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstHI >= 0 {
-                                            Text("歷史 \(item.AstHI)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstGE >= 0 {
-                                            Text("地理 \(item.AstGE)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        if item.AstSO >= 0 {
-                                            Text("公民 \(item.AstSO)")
-                                                .padding(5)
-                                                .background(Color(.systemGray5))
-                                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        }
-                                        
+                                    
+                                    if item.GsatCH >= 0 {
+                                        Text("國文 \(item.GsatCH)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
                                     }
+                                    if item.GsatEN >= 0 {
+                                        Text("英文 \(item.GsatEN)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.GsatMA >= 0 {
+                                        Text("數Ａ \(item.GsatMA)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.GsatMB >= 0 {
+                                        Text("數Ｂ \(item.GsatMB)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.GsatSC >= 0 {
+                                        Text("自然 \(item.GsatSC)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.GsatSO >= 0 {
+                                        Text("社會 \(item.GsatSO)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.GsatEL >= 0 {
+                                        switch item.GsatEL {
+                                        case 3:
+                                            Text("英聽 A")
+                                                .padding(5)
+                                                .background(Color(.systemGray5))
+                                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        case 2:
+                                            Text("英聽 B")
+                                                .padding(5)
+                                                .background(Color(.systemGray5))
+                                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        case 1:
+                                            Text("英聽 C")
+                                                .padding(5)
+                                                .background(Color(.systemGray5))
+                                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        default:
+                                            Text("英聽 F")
+                                                .padding(5)
+                                                .background(Color(.systemGray5))
+                                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        }
+                                    }
+                                    if item.AstMA >= 0 {
+                                        Text("數甲 \(item.AstMA)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstMB >= 0 {
+                                        Text("數乙 \(item.AstMB)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstPH >= 0 {
+                                        Text("物理 \(item.AstPH)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstCH >= 0 {
+                                        Text("化學 \(item.AstCH)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstBI >= 0 {
+                                        Text("生物 \(item.AstBI)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstHI >= 0 {
+                                        Text("歷史 \(item.AstHI)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstGE >= 0 {
+                                        Text("地理 \(item.AstGE)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    if item.AstSO >= 0 {
+                                        Text("公民 \(item.AstSO)")
+                                            .padding(5)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    
                                 }
                             }
-                            .padding()
-                            .frame(width: screenWidth - 32)
-                            .background(Color(.systemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color(.systemGray6), lineWidth: 2)
-                            )
-                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
-                        .buttonStyle(.plain)
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color(.systemGray6), lineWidth: 2)
+                        )
+                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        .padding(.horizontal)
                     }
-                }
-                .padding()
-            }
-            Spacer()
-            GeometryReader{ geometry in
-                HStack{
-                    Spacer()
-                }
-                .onAppear {
-                    DispatchQueue.main.async {
-                        screenWidth = geometry.size.width
-                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .frame(height: 0)
+            .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+            .background(Color(.secondarySystemBackground))
+            
         }
         .navigationTitle("差距分析")
         .navigationBarTitleDisplayMode(.inline)
@@ -256,146 +271,123 @@ struct GuessDetailView: View {
     let grade: UserGrade
     
     var body: some View {
-        VStack(alignment: .leading){
+        VStack(alignment: .leading, spacing: 0){
+            
+            HStack{
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 1)
             
             VStack{
-                HStack{
-                    Text(grade.dataName)
-                        .bold()
-                    Spacer()
-                }
-                HStack{
-                    ScrollView(.horizontal, showsIndicators: false){
-                        HStack{
-                            
-                            if grade.GsatCH >= 0 {
-                                Text("國文 \(grade.GsatCH)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatEN >= 0 {
-                                Text("英文 \(grade.GsatEN)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatMA >= 0 {
-                                Text("數Ａ \(grade.GsatMA)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatMB >= 0 {
-                                Text("數Ｂ \(grade.GsatMB)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatSC >= 0 {
-                                Text("自然 \(grade.GsatSC)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatSO >= 0 {
-                                Text("社會 \(grade.GsatSO)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.GsatEL >= 0 {
-                                switch grade.GsatEL {
-                                case 3:
-                                    Text("英聽 A")
-                                        .padding(5)
-                                        .background(Color(.systemGray5))
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                                case 2:
-                                    Text("英聽 B")
-                                        .padding(5)
-                                        .background(Color(.systemGray5))
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                                case 1:
-                                    Text("英聽 C")
-                                        .padding(5)
-                                        .background(Color(.systemGray5))
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                                default:
-                                    Text("英聽 F")
-                                        .padding(5)
-                                        .background(Color(.systemGray5))
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        ScrollView(.horizontal, showsIndicators: false){
+                            HStack(spacing: 10){
+                                
+                                VStack{
+                                    Text("國文")
+                                        .font(.caption)
+                                    if grade.GsatCH >= 0 { Text("\(grade.GsatCH)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
                                 }
+                                VStack{
+                                    Text("英文")
+                                        .font(.caption)
+                                    if grade.GsatEN >= 0 { Text("\(grade.GsatEN)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("數Ａ")
+                                        .font(.caption)
+                                    if grade.GsatMA >= 0 { Text("\(grade.GsatMA)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("數Ｂ")
+                                        .font(.caption)
+                                    if grade.GsatMB >= 0 { Text("\(grade.GsatMB)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("自然")
+                                        .font(.caption)
+                                    if grade.GsatSC >= 0 { Text("\(grade.GsatSC)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("社會")
+                                        .font(.caption)
+                                    if grade.GsatSO >= 0 { Text("\(grade.GsatSO)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                
+                                VStack{
+                                    Text("英聽")
+                                        .font(.caption)
+                                    switch grade.GsatEL {
+                                    case 3:
+                                        Text("A 級")
+                                            .bold().font(.title3)
+                                    case 2:
+                                        Text("B 級")
+                                            .bold().font(.title3)
+                                    case 1:
+                                        Text("C 級")
+                                            .bold().font(.title3)
+                                    default:
+                                        Text("F 級 / 未報考").foregroundStyle(Color(.systemGray))
+                                    }
+                                }
+                                
+                                VStack{
+                                    Text("數甲")
+                                        .font(.caption)
+                                    if grade.AstMA >= 0 { Text("\(grade.AstMA)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("數乙")
+                                        .font(.caption)
+                                    if grade.AstMB >= 0 { Text("\(grade.AstMB)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("物理")
+                                        .font(.caption)
+                                    if grade.AstPH >= 0 { Text("\(grade.AstPH)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("化學")
+                                        .font(.caption)
+                                    if grade.AstCH >= 0 { Text("\(grade.AstCH)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("生物")
+                                        .font(.caption)
+                                    if grade.AstBI >= 0 { Text("\(grade.AstBI)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("歷史")
+                                        .font(.caption)
+                                    if grade.AstHI >= 0 { Text("\(grade.AstHI)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("地理")
+                                        .font(.caption)
+                                    if grade.AstGE >= 0 { Text("\(grade.AstGE)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                VStack{
+                                    Text("公民")
+                                        .font(.caption)
+                                    if grade.AstSO >= 0 { Text("\(grade.AstSO)").bold().font(.title3) } else { Text("未報考").foregroundStyle(Color(.systemGray)) }
+                                }
+                                
+                                VStack{
+                                    Text("加分")
+                                        .font(.caption)
+                                    Text("\(grade.SpecialPercentage) %")
+                                        .bold()
+                                        .font(.title3)
+                                }
+                                
                             }
-                            if grade.AstMA >= 0 {
-                                Text("數甲 \(grade.AstMA)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstMB >= 0 {
-                                Text("數乙 \(grade.AstMB)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstPH >= 0 {
-                                Text("物理 \(grade.AstPH)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstCH >= 0 {
-                                Text("化學 \(grade.AstCH)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstBI >= 0 {
-                                Text("生物 \(grade.AstBI)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstHI >= 0 {
-                                Text("歷史 \(grade.AstHI)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstGE >= 0 {
-                                Text("地理 \(grade.AstGE)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            if grade.AstSO >= 0 {
-                                Text("公民 \(grade.AstSO)")
-                                    .padding(5)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5))
-                            }
-                            
                         }
                     }
-                }
-                HStack{
-                    TextField("搜尋關鍵字或代碼", text: $searchText)
-                        .padding(10)
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
-                    Button {
-                        showFilter = true
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
+                    HStack{
+                        TextField("搜尋關鍵字或代碼", text: $searchText)
                             .padding(10)
                             .background(Color(.systemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -403,32 +395,51 @@ struct GuessDetailView: View {
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color(.systemGray6), lineWidth: 2)
                             )
+                        Button {
+                            showFilter = true
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                                .padding(10)
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color(.systemGray6), lineWidth: 2)
+                                )
+                        }
                     }
                 }
-            }
-                .padding()
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(.systemGray6), lineWidth: 2)
-                )
-                .shadow(color: Color(.label).opacity(0.1),radius: 5)
                 .padding(.horizontal)
+                .padding(.bottom, 10)
+                .background(Color(.systemBackground))
+                .clipShape(
+                    .rect(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 20,
+                        bottomTrailingRadius: 20,
+                        topTrailingRadius: 0
+                    )
+                )
+            }
+            .background(Color(.secondarySystemBackground))
             
             ScrollView {
+                Color.clear
+                    .padding(.bottom, 5)
+                
                 LazyVStack{
                     ForEach(filteredDepartments) { department in
                         GuessRowView(department: department, grade: grade)
                     }
                 }
-                .padding()
+                .padding(.horizontal)
             }
+            .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+            .background(Color(.secondarySystemBackground))
             
-            
-            HStack{
-                Spacer()
-            }
         }
         .navigationTitle("差距分析 - \(grade.dataName)")
         .navigationBarTitleDisplayMode(.inline)
@@ -539,7 +550,7 @@ struct GuessRowView: View {
                                         .frame(width: 45, alignment: .trailing)
                                     Text("=")
                                     Text(String(format: "%.2f", Double(grade.GsatCH) * department.gsatchineseMultiplier))
-                                        .frame(width: 45, alignment: .trailing)
+                                        .frame(width: 50, alignment: .trailing)
                                 }
                             }
                         }
@@ -915,10 +926,7 @@ struct GuessRowView: View {
             .padding()
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color(.systemGray6), lineWidth: 2)
-            )
+            .shadow(color: Color(.label).opacity(0.1),radius: 5)
         }
         .buttonStyle(PlainButtonStyle())
     }

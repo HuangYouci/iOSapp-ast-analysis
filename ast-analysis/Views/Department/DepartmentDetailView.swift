@@ -362,6 +362,7 @@ struct DepartmentDetailView: View {
                             let resultScoreAverage = resultScoreValue / department.resultTotalMultiplier
                             let resultScoreToNow = resultScoreAverage * totalMultiplier() // 去年分數轉換今年總分
                             let scoreDiff = resultScoreToNow - totalScore() // 差距總分
+                            
                             let scoreAverageDiff = scoreDiff / totalMultiplier() // 差距平均
                             
                             if scoreDiff > 0 {
