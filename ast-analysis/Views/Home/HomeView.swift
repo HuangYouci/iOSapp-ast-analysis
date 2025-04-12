@@ -11,6 +11,7 @@ struct HomeView: View {
     @EnvironmentObject private var userData: UserData
     @EnvironmentObject private var iapManager: IAPManager
     @StateObject private var adViewModel = RewardedAdViewModel()
+    @Binding var selectedPage: Int
     
     var body: some View {
         NavigationStack{
@@ -200,6 +201,30 @@ struct HomeView: View {
                     }
                     .padding(.horizontal)
                     
+                    Button{
+                        selectedPage = 1;
+                    } label: {
+                        VStack(alignment: .leading, spacing: 20){
+                            HStack(alignment: .center){
+                                Text("分析結果")
+                                    .font(.title3)
+                                Text("\(userData.userData.grade.count) 筆分析結果")
+                                Spacer()
+                                Image(systemName: "chart.line.text.clipboard")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundStyle(Color(.accent))
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                    
                     HStack{
                         Text("分析次數")
                             .font(.caption)
@@ -295,26 +320,28 @@ struct HomeView: View {
                     }
                     .padding(.horizontal)
                     
-                    NavigationLink(destination: GuessView()){
-                        VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
-                                Text("差距分析")
-                                    .font(.title3)
-                                Spacer()
-                                Image(systemName: "sparkles")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundStyle(Color(.accent))
+                    HStack{
+                        NavigationLink(destination: GuessView()){
+                            VStack(alignment: .leading, spacing: 20){
+                                HStack(alignment: .bottom){
+                                    Text("差距計算")
+                                        .font(.title3)
+                                    Spacer()
+                                    Image(systemName: "ruler")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(Color(.accent))
+                                }
+                                Text("計算與校系的分數差")
                             }
-                            Text("以已知成績計算與校系的分數差距")
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                     .padding(.horizontal)
                     
                 }
@@ -538,9 +565,10 @@ struct HomeView_pad: View {
                         windows.append(Window(content: AnyView(ResultView()), name: "分析結果"))
                     } label: {
                         VStack(alignment: .leading, spacing: 20){
-                            HStack(alignment: .bottom){
+                            HStack(alignment: .center){
                                 Text("分析結果")
                                     .font(.title3)
+                                Text("\(userData.userData.grade.count) 筆分析結果")
                                 Spacer()
                                 Image(systemName: "chart.line.text.clipboard")
                                     .resizable()
@@ -548,7 +576,6 @@ struct HomeView_pad: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundStyle(Color(.accent))
                             }
-                            Text("\(userData.userData.grade.count) 筆分析結果")
                         }
                         .padding()
                         .background(Color(.systemBackground))
@@ -662,11 +689,11 @@ struct HomeView_pad: View {
                     .padding(.horizontal)
                     
                     Button {
-                        windows.append(Window(content: AnyView(GuessView()), name: "差距分析"))
+                        windows.append(Window(content: AnyView(GuessView()), name: "差距計算"))
                     } label: {
                         VStack(alignment: .leading, spacing: 20){
                             HStack(alignment: .bottom){
-                                Text("差距分析")
+                                Text("差距計算")
                                     .font(.title3)
                                 Spacer()
                                 Image(systemName: "sparkles")
@@ -675,7 +702,7 @@ struct HomeView_pad: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundStyle(Color(.accent))
                             }
-                            Text("以已知成績計算與校系的分數差距")
+                            Text("計算與校系的分數差")
                         }
                         .padding()
                         .background(Color(.systemBackground))
@@ -790,7 +817,7 @@ struct HomeView_pad: View {
 
 
 #Preview {
-    HomeView()
+    HomeView(selectedPage: .constant(0))
         .environmentObject(IAPManager())
         .environmentObject(UserData())
 }

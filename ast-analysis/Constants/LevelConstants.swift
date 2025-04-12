@@ -8,7 +8,7 @@
 struct LevelConstants {
     
     // 本資料年份
-    static var programVersion: String = "v1.2"
+    static var programVersion: String = "v1.2.1"
     static var dataVersion: String = "114"
 
     // 分科五標請要減 1 後乘以 4 ! 比較時需「大於」 !

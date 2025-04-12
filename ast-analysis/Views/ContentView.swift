@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     
     @EnvironmentObject private var departmentData: DepartmentData
+    @State private var selectedPage: Int = 0
     
     var body: some View {
         Group {
@@ -19,8 +20,8 @@ struct ContentView: View {
                     HomeView_pad()
                 } else {
                     // 手機（直向）
-                    TabView{
-                        HomeView()
+                    TabView(selection: $selectedPage){
+                        HomeView(selectedPage: $selectedPage)
                             .tabItem {
                                 Image(systemName: "square.and.pencil")
                                 Text("主頁")

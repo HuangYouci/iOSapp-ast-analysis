@@ -53,14 +53,55 @@ struct ProView: View{
                 
                 FlowLayout{
                     
+                    // 單次付費
+                    
+                    if let product = iapManager.products.first(where: { $0.productIdentifier == "com.huangyouci.ast_analysis.analyzeCount30" }) {
+                        Button {
+                            iapManager.purchaseProduct(withID: product.productIdentifier)
+                        } label: {
+                            VStack(alignment: .leading){
+                                Text(product.localizedTitle)
+                                    .font(.title2)
+                                    .bold()
+                                    .padding(.bottom, 5)
+                                Label("100 次分析次數", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                Label("優惠選擇", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                Label("支持開發", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                    .padding(.bottom, 5)
+                                Text("購買")
+                                    .font(.caption)
+                                    .foregroundStyle(Color(.systemGray))
+                                Text(iapManager.priceString(for: product.productIdentifier))
+                                    .font(.title2)
+                                    .bold()
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color(.systemGray6), lineWidth: 2)
+                            )
+                            .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    
                     // 付費用戶
                     if iapManager.userPurchased {
+                        // 已購買 UI
                         VStack(alignment: .leading){
                             Text("付費用戶")
                                 .font(.title2)
                                 .bold()
                                 .padding(.bottom, 5)
                             Label("無限次分析次數", systemImage: "checkmark")
+                                .foregroundStyle(Color(.systemGray))
+                            Label("刪程式後可復原", systemImage: "checkmark")
                                 .foregroundStyle(Color(.systemGray))
                             Label("支持開發", systemImage: "checkmark")
                                 .foregroundStyle(Color(.systemGray))
@@ -80,30 +121,28 @@ struct ProView: View{
                                 .stroke(Color(.systemGray6), lineWidth: 2)
                         )
                         .shadow(color: Color(.label).opacity(0.1),radius: 5)
-                    } else {
+                    } else if let proProduct = iapManager.products.first(where: { $0.productIdentifier == "userpurchased" }) {
                         Button {
-                            iapManager.purchaseProduct()
+                            iapManager.purchaseProduct(withID: proProduct.productIdentifier)
                         } label: {
                             VStack(alignment: .leading){
-                                if let product = iapManager.product {
-                                    Text(product.localizedTitle)
-                                        .font(.title2)
-                                        .bold()
-                                        .padding(.bottom, 5)
-                                    Label("無限次分析次數", systemImage: "checkmark")
-                                        .foregroundStyle(Color(.systemGray))
-                                    Label("支持開發", systemImage: "checkmark")
-                                        .foregroundStyle(Color(.systemGray))
-                                        .padding(.bottom, 5)
-                                    Text("購買")
-                                        .font(.caption)
-                                        .foregroundStyle(Color(.systemGray))
-                                    Text("\(iapManager.priceString())")
-                                        .font(.title2)
-                                        .bold()
-                                } else {
-                                    Text("載入中...")
-                                }
+                                Text(proProduct.localizedTitle)
+                                    .font(.title2)
+                                    .bold()
+                                    .padding(.bottom, 5)
+                                Label("無限次分析次數", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                Label("刪程式後可復原", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                Label("支持開發", systemImage: "checkmark")
+                                    .foregroundStyle(Color(.systemGray))
+                                    .padding(.bottom, 5)
+                                Text("購買")
+                                    .font(.caption)
+                                    .foregroundStyle(Color(.systemGray))
+                                Text(iapManager.priceString(for: proProduct.productIdentifier))
+                                    .font(.title2)
+                                    .bold()
                             }
                             .padding()
                             .background(Color(.systemBackground))
@@ -114,10 +153,9 @@ struct ProView: View{
                             )
                             .shadow(color: Color(.label).opacity(0.1),radius: 5)
                         }
-                        .disabled(iapManager.product == nil)
                         .buttonStyle(.plain)
                     }
-                    
+
                     // 恢復購買
                     
                     Button {
@@ -171,8 +209,11 @@ struct ProView: View{
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: iapManager.userPurchased) { newValue in
             if newValue {
-                userData.userData.analyzeCount = 10000000
+                userData.userData.analyzeCount = 1000000
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .didPurchaseAnalyzeCount)) { _ in
+            userData.userData.analyzeCount += 100
         }
         
     }

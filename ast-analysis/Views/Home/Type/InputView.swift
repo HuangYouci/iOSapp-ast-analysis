@@ -458,7 +458,7 @@ struct InputView: View {
                             Text("請稍候")
                                 .foregroundStyle(Color(.systemGray))
                                 .padding(.bottom, 10)
-                            ProgressView(value: ( Double(analyseStep) / 8.0 ))
+                            ProgressView(value: ( Double(analyseStep) / 9.0 ))
                                 .padding(.horizontal, 50)
                         }
                         Spacer()
@@ -613,6 +613,10 @@ struct InputView: View {
         analyseStep = 7
         await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0.2, percentDown: 0))
         analyseStep = 8
+        
+        // 計算無結果 (存於[6])
+        await editing.analyse.append(analyseStarsDepartments(departments: departments, result: editing, percentUp: 0, percentDown: -1))
+        analyseStep = 9
     }
     
     private func analyseFilteredDepartments(departments: [Departments], result: UserGrade) async -> [Departments] {
@@ -808,7 +812,12 @@ struct InputView: View {
     private func analyseCalculate(departments: [Departments], result: UserGrade) async -> [Departments] {
         return departments.map { department in
             var newDepartment = department
+            // 計算錄取機率
             newDepartment.calculatedPercent = directCalculateChance(department: department, grade: editing)
+            // 如果沒有資料 機率為 -1
+            if (newDepartment.resultCombineArray.isEmpty) {
+                newDepartment.calculatedPercent = -1
+            }
             return newDepartment
         }
     }

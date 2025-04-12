@@ -21,22 +21,48 @@ struct DepartmentDetailView: View {
     
     var body: some View{
         
-        VStack{
+        VStack(spacing: 0){
+            
             HStack{
-                VStack(alignment: .leading){
-                    Text(department.schoolname)
-                    Text(department.departmentname)
-                        .font(.title2)
-                        .bold()
-                }
                 Spacer()
-                Text(department.code)
-                    .padding(5)
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
             }
-            Divider()
+            .padding(.horizontal)
+            .padding(.bottom, 1)
+            
+            VStack{
+                VStack(alignment: .leading){
+                    HStack{
+                        VStack(alignment: .leading){
+                            Text(department.schoolname)
+                            Text(department.departmentname)
+                                .font(.title2)
+                                .bold()
+                        }
+                        Spacer()
+                        Text(department.code)
+                            .padding(5)
+                            .background(Color(.systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 10)
+                .background(Color(.systemBackground))
+                .clipShape(
+                    .rect(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 20,
+                        bottomTrailingRadius: 20,
+                        topTrailingRadius: 0
+                    )
+                )
+            }
+            .background(Color(.secondarySystemBackground))
+            
             ScrollView{
+                
+                Color.clear
+                    .padding(.bottom, 5)
                 
                 if displayMore {
                     VStack(alignment: .leading){
@@ -73,7 +99,7 @@ struct DepartmentDetailView: View {
                         }
                     }
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color(.systemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
@@ -189,7 +215,7 @@ struct DepartmentDetailView: View {
                     
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 VStack(alignment: .leading){
@@ -297,7 +323,7 @@ struct DepartmentDetailView: View {
                     
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 VStack(alignment: .leading){
@@ -345,14 +371,14 @@ struct DepartmentDetailView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 if displayMore {
                     VStack(alignment: .leading){
                         HStack(alignment: .center){
                             Image(systemName: "sparkles")
-                            Text("差距分析")
+                            Text("差距計算")
                             Spacer()
                         }
                         .bold()
@@ -391,7 +417,7 @@ struct DepartmentDetailView: View {
                         
                     }
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color(.systemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
@@ -436,7 +462,7 @@ struct DepartmentDetailView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 VStack(alignment: .leading){
@@ -458,11 +484,15 @@ struct DepartmentDetailView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                
             }
+            .padding(.horizontal)
+            .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+            .background(Color(.secondarySystemBackground))
+            
         }
-        .padding()
         .navigationTitle(department.fullname)
         .navigationBarTitleDisplayMode(.inline)
     }

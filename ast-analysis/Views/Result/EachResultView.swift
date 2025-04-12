@@ -449,6 +449,26 @@ struct EachResultView: View {
                     .foregroundStyle(Color(.systemGray2))
                     .padding(10)
                 
+                if result.analyse.count > 7 {
+                    NavigationLink(destination: DepartmentListView(departments: result.analyse[7], grade: result, title: "無去年錄取資料校系")){
+                        VStack{
+                            HStack{
+                                Text("無去年錄取資料校系")
+                                    .bold()
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(Color(.systemGray2))
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                        .padding(.horizontal)
+                    }
+                    .buttonStyle(.plain)
+                }
+                
                 NavigationLink(destination: EachResultReasonView(resultID: resultID)){
                     VStack{
                         HStack{
@@ -492,10 +512,11 @@ struct EachResultView: View {
                     .font(.caption)
                     .foregroundStyle(Color(.systemGray2))
                     .padding(10)
+                
                 NavigationLink(destination: GuessDetailView(grade: result)){
                     VStack{
                         HStack{
-                            Text("差距分析")
+                            Text("差距計算")
                                 .bold()
                             Spacer()
                             Image(systemName: "chevron.right")

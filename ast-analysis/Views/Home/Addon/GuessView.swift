@@ -235,7 +235,7 @@ struct GuessView: View {
             .background(Color(.secondarySystemBackground))
             
         }
-        .navigationTitle("差距分析")
+        .navigationTitle("差距計算")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -441,7 +441,7 @@ struct GuessDetailView: View {
             .background(Color(.secondarySystemBackground))
             
         }
-        .navigationTitle("差距分析 - \(grade.dataName)")
+        .navigationTitle("差距計算 - \(grade.dataName)")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showFilter){
             DepartmentListFilterView(searchFilter: $searchFilter)
@@ -852,11 +852,11 @@ struct GuessRowView: View {
                         
                     }
                     HStack{
-                        Image(systemName: "sparkles")
+                        Image(systemName: "ruler")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                        Text("差距分析")
+                        Text("差距計算")
                     }
                     .font(.caption)
                     .foregroundStyle(Color(.systemGray))
@@ -872,7 +872,7 @@ struct GuessRowView: View {
                             HStack{
                                 Text("科系要求之科目皆已有成績")
                                 Spacer()
-                                Text("不適用差距分析")
+                                Text("不適用差距計算")
                             }
                         } else {
                             if scoreDiff > 0 {

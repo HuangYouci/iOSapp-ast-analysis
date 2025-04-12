@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// 用戶基本資料
 struct User: Identifiable, Codable {
     var id = UUID()
     var name: String = "用戶"
@@ -17,6 +18,7 @@ struct User: Identifiable, Codable {
     var analyzeCount: Int = 0
 }
 
+// 用戶成績資料
 struct UserGrade: Identifiable, Codable {
     var id = UUID()
     var dataName: String
@@ -41,8 +43,7 @@ struct UserGrade: Identifiable, Codable {
     var analyse: [[Departments]] = [[]]
 }
 
-// pad
-
+// For iPad - 視窗資料
 struct Window: Identifiable {
     let id = UUID()
     var offset: CGSize = .zero

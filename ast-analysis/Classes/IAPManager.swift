@@ -5,9 +5,12 @@ class IAPManager: NSObject, ObservableObject {
     static let shared = IAPManager()
     
     @Published var userPurchased = false
-    @Published var product: SKProduct?
-    
-    private let productID = "userpurchased"
+    @Published var products: [SKProduct] = []
+
+    private let productIDs: Set<String> = [
+        "userpurchased",
+        "com.huangyouci.ast_analysis.analyzeCount30"
+    ]
     
     override init() {
         super.init()
@@ -16,13 +19,13 @@ class IAPManager: NSObject, ObservableObject {
     }
     
     func fetchProducts() {
-        let request = SKProductsRequest(productIdentifiers: [productID])
+        let request = SKProductsRequest(productIdentifiers: productIDs)
         request.delegate = self
         request.start()
     }
     
-    func purchaseProduct() {
-        guard let product = product else { return }
+    func purchaseProduct(withID id: String) {
+        guard let product = products.first(where: { $0.productIdentifier == id }) else { return }
         let payment = SKPayment(product: product)
         SKPaymentQueue.default().add(payment)
     }
@@ -31,8 +34,8 @@ class IAPManager: NSObject, ObservableObject {
         SKPaymentQueue.default().restoreCompletedTransactions()
     }
     
-    func priceString() -> String {
-        guard let product = product else { return "N/A" }
+    func priceString(for id: String) -> String {
+        guard let product = products.first(where: { $0.productIdentifier == id }) else { return "N/A" }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = product.priceLocale
@@ -40,26 +43,28 @@ class IAPManager: NSObject, ObservableObject {
     }
 }
 
+extension Notification.Name {
+    static let didPurchaseAnalyzeCount = Notification.Name("didPurchaseAnalyzeCount")
+}
+
 extension IAPManager: SKProductsRequestDelegate, SKPaymentTransactionObserver {
     nonisolated func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        if let fetchedProduct = response.products.first {
-            DispatchQueue.main.async {
-                self.product = fetchedProduct
-            }
+        DispatchQueue.main.async {
+            self.products = response.products
         }
     }
     
     nonisolated func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
-            case .purchased:
+            case .purchased, .restored:
+                let productID = transaction.payment.productIdentifier
                 DispatchQueue.main.async {
-                    self.userPurchased = true
-                }
-                SKPaymentQueue.default().finishTransaction(transaction)
-            case .restored:
-                DispatchQueue.main.async {
-                    self.userPurchased = true
+                    if productID == "userpurchased" {
+                        self.userPurchased = true
+                    } else if productID == "com.huangyouci.ast_analysis.analyzeCount30" {
+                        NotificationCenter.default.post(name: .didPurchaseAnalyzeCount, object: nil)
+                    }
                 }
                 SKPaymentQueue.default().finishTransaction(transaction)
             case .failed:
@@ -69,4 +74,5 @@ extension IAPManager: SKProductsRequestDelegate, SKPaymentTransactionObserver {
             }
         }
     }
+
 }
