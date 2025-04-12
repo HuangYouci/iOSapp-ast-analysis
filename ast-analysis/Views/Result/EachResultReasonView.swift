@@ -36,13 +36,6 @@ struct EachResultReasonView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         VStack{
-                            Text("校系數量")
-                                .font(.caption)
-                            Text("\(departmentData.departments.count)")
-                            .font(.title3)
-                            .bold()
-                        }
-                        VStack{
                             Text("不符合校系數")
                                 .font(.caption)
                             Text("\(nopass.count)")

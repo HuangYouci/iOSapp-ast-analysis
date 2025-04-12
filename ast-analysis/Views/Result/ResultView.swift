@@ -186,10 +186,6 @@ struct ResultView: View {
                         .padding()
                         .background(Color(.systemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(.systemGray6), lineWidth: 2)
-                        )
                         .shadow(color: Color(.label).opacity(0.1),radius: 5)
                     }
                     .buttonStyle(.plain)
