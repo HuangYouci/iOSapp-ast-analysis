@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct InfoView: View{
+    
     @EnvironmentObject private var userData: UserData
+    @State private var safariItem: SafariItem?
+    
     var body: some View {
         VStack(spacing: 0){
             
@@ -24,14 +27,14 @@ struct InfoView: View{
                         VStack{
                             Text("程式版本")
                                 .font(.caption)
-                            Text("\(LevelConstants.programVersion)")
+                            Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
                             .font(.title3)
                             .bold()
                         }
                         VStack{
                             Text("資料版本")
                                 .font(.caption)
-                            Text("\(LevelConstants.dataVersion)年")
+                            Text("\(LevelConstants.dataVersion) 年")
                             .font(.title3)
                             .bold()
                         }
@@ -57,7 +60,73 @@ struct InfoView: View{
                 Color.clear
                     .padding(.bottom, 5)
                 
-                Text("感謝您使用本程式，本程式是由 YC DEV 所開發之分科測驗分析，可協助您檢閱與分析分科測驗校系資料。資料源自大學考試入學分發委員會，且僅供參考，最新資料以官方為主。使用本程式代表您已同意使用者條款 ( https://huangyouci.github.io/app/eula ) 與隱私權政策 ( https://huangyouci.github.io/app/privacypolicy )，若有其他問題，可來信開發者信箱 ( ycdev@icloud.com )。本程式的版本是 \(LevelConstants.programVersion)，資料年份是 \(LevelConstants.dataVersion) 年。")
+                VStack(alignment: .leading){
+                    HStack{
+                        Image("clearlogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 70, height: 70)
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            .padding(.vertical, 5)
+                        VStack(alignment: .leading){
+                            Text("分科測驗分析")
+                                .bold()
+                                .font(.title3)
+                            Text("由 YC 開發")
+                            Text("ycdev@icloud.com")
+                        }
+                    }
+                    Divider()
+                        .padding(.vertical, 5)
+                    HStack{
+                        Text("程式版本")
+                        Spacer()
+                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
+                            .foregroundStyle(Color(.systemGray))
+                    }
+                    Divider()
+                        .padding(.vertical, 5)
+                    HStack{
+                        Text("校系資料")
+                        Spacer()
+                        Text("\(LevelConstants.dataVersion) 年")
+                            .foregroundStyle(Color(.systemGray))
+                    }
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                .padding(.horizontal)
+                
+                VStack(alignment: .leading){
+                    Button {
+                        safariItem = SafariItem(url: URL(string: "https://huangyouci.github.io/app/eula/")!)
+                    } label: {
+                        HStack{
+                            Text("使用條款")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(Color(.systemGray))
+                        }
+                    }
+                    Divider()
+                        .padding(.vertical, 5)
+                    Button {
+                        safariItem = SafariItem(url: URL(string: "https://huangyouci.github.io/app/privacypolicy/")!)
+                    } label: {
+                        HStack{
+                            Text("隱私政策")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(Color(.systemGray))
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: Color(.label).opacity(0.1),radius: 5)
                 .padding(.horizontal)
                 
             }
@@ -67,6 +136,9 @@ struct InfoView: View{
         }
         .navigationTitle("程式資訊")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $safariItem) { item in
+                    SafariView(url: item.url)
+                }
         
     }
 }
