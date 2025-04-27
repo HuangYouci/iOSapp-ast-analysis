@@ -11,6 +11,7 @@ import Foundation
 struct DepartmentDetailView: View {
     
     @EnvironmentObject private var departmentData: DepartmentData
+    @State private var aiInfo: String = ""
     
     let department: Departments
     let grade: UserGrade
@@ -68,6 +69,9 @@ struct DepartmentDetailView: View {
                     VStack(alignment: .leading){
                         HStack(alignment: .center){
                             Image(systemName: "medal.star")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
                             Text("錄取機率")
                             Spacer()
                         }
@@ -106,6 +110,9 @@ struct DepartmentDetailView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "magnifyingglass")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                         Text("檢定標準")
                         Spacer()
                         if checkAllTestsPassed(SO: grade.GsatSO, goalSO: department.socialtest, SC: grade.GsatSC, goalSC: department.sciencetest, MB: grade.GsatMB, goalMB: department.mathbtest, MA: grade.GsatMA, goalMA: department.mathatest, EN: grade.GsatEN, goalEN: department.englishtest, CH: grade.GsatCH, goalCH: department.chinesetest, EL: grade.GsatEL, goalEL: department.englishlistentest) {
@@ -221,9 +228,11 @@ struct DepartmentDetailView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "line.3.horizontal.decrease")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                         Text("採計科目")
                         Spacer()
-                        Text("114年")
                     }
                     .bold()
                     .padding(.bottom, 10)
@@ -329,9 +338,11 @@ struct DepartmentDetailView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "document.badge.clock")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                         Text("篩選結果")
                         Spacer()
-                        Text("113年")
                     }
                     .bold()
                     .padding(.bottom, 10)
@@ -377,7 +388,10 @@ struct DepartmentDetailView: View {
                 if displayMore {
                     VStack(alignment: .leading){
                         HStack(alignment: .center){
-                            Image(systemName: "sparkles")
+                            Image(systemName: "ruler")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
                             Text("差距計算")
                             Spacer()
                         }
@@ -424,6 +438,9 @@ struct DepartmentDetailView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "person.crop.rectangle.stack")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                         Text("同分參酌")
                         Spacer()
                     }
@@ -468,6 +485,9 @@ struct DepartmentDetailView: View {
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
                         Image(systemName: "document")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
                         Text("資訊")
                         Spacer()
                     }
