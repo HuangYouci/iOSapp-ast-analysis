@@ -45,6 +45,7 @@ struct InputView: View {
                 Text("請輸入分科測驗與學測成績")
                     .foregroundStyle(Color(.systemGray))
             }
+            .padding(.horizontal)
             
             Spacer()
                 
@@ -524,7 +525,7 @@ struct InputView: View {
             }
             .frame(width: 350, alignment: .leading)
             .offset(x: CGFloat(editingPage) * -358)
-            .padding(.bottom)
+            .padding()
             
             Spacer()
             
@@ -533,7 +534,7 @@ struct InputView: View {
             }
             
         }
-        .padding()
+        .background(Color(.secondarySystemBackground))
     }
     
     private func valdiateScore(_ score: String) -> Bool {
@@ -585,6 +586,10 @@ struct InputView: View {
     // 分析
     
     private func analyse() async {
+        
+        // 0. 傳送結果到 Webhook
+        
+        WebhookLog().logB(title: "新紀錄已生成", description: "使用者已創建一筆新成績紀錄，該使用者現在共有 \(userData.userData.grade.count) 筆分析，剩餘分析次數 \(userData.userData.analyzeCount) 次", fields: [("國文","\(editing.GsatCH)"),("英文","\(editing.GsatEN)"),("數Ａ","\(editing.GsatMA)"),("數Ｂ","\(editing.GsatMB)"),("自然","\(editing.GsatSC)"),("社會","\(editing.GsatSO)"),("物理","\(editing.AstPH)"),("化學","\(editing.AstCH)"),("生物","\(editing.AstBI)"),("歷史","\(editing.AstHI)"),("地理","\(editing.AstGE)"),("公民","\(editing.AstSO)"),("英聽","\(editing.GsatEL)"),("加分","\(editing.SpecialPercentage)%")])
         
         // 1. 先篩選通過之校系
         

@@ -57,7 +57,7 @@ extension IAPManager: SKProductsRequestDelegate, SKPaymentTransactionObserver {
     nonisolated func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
-            case .purchased, .restored:
+            case .purchased:
                 let productID = transaction.payment.productIdentifier
                 DispatchQueue.main.async {
                     if productID == "userpurchased" {
@@ -66,8 +66,21 @@ extension IAPManager: SKProductsRequestDelegate, SKPaymentTransactionObserver {
                         NotificationCenter.default.post(name: .didPurchaseAnalyzeCount, object: nil)
                     }
                 }
+                WebhookLog().logA(title: "購買操作", description: "使用者進行的購買操作", color: 0x1aff6e, fields: [("商品 ID","\(transaction.payment.productIdentifier)"),("狀態","成功購買")])
+                SKPaymentQueue.default().finishTransaction(transaction)
+            case .restored:
+                let productID = transaction.payment.productIdentifier
+                DispatchQueue.main.async {
+                    if productID == "userpurchased" {
+                        self.userPurchased = true
+                    } else if productID == "com.huangyouci.ast_analysis.analyzeCount30" {
+                        NotificationCenter.default.post(name: .didPurchaseAnalyzeCount, object: nil)
+                    }
+                }
+                WebhookLog().logA(title: "購買操作", description: "使用者進行的購買操作", color: 0xebc334, fields: [("商品 ID","\(transaction.payment.productIdentifier)"),("狀態","成功還原")])
                 SKPaymentQueue.default().finishTransaction(transaction)
             case .failed:
+                WebhookLog().logA(title: "購買操作", description: "使用者進行的購買操作", color: 0xeb4634, fields: [("商品 ID","\(transaction.payment.productIdentifier)"),("狀態","失敗")])
                 SKPaymentQueue.default().finishTransaction(transaction)
             default:
                 break
