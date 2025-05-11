@@ -120,11 +120,11 @@
 				};
 			};
 			buildConfigurationList = 734EFB332D8D5E670045A879 /* Build configuration list for PBXProject "ast-analysis" */;
-			developmentRegion = en;
+			developmentRegion = "zh-Hant";
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				"zh-Hant",
 			);
 			mainGroup = 734EFB2F2D8D5E670045A879;
 			minimizedProjectReferenceProxies = 1;
