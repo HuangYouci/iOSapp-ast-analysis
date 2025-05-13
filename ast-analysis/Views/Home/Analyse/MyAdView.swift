@@ -16,7 +16,7 @@ struct MyAdView: View {
     // Binding
     // State
     @State private var isAdCompleted: Bool = false
-    @State private var remainingSeconds: Int = 30
+    @State private var remainingSeconds: Int = 60
     @State private var timer: Timer? = nil
     // --------------- //
     
@@ -32,10 +32,17 @@ struct MyAdView: View {
                     .foregroundStyle(Color(.systemGray))
             }
             ScrollView{
-                Image("ad")
-                    .resizable()
-                    .scaledToFit()
-                Text("( 廣告洽談: ycdev@icloud.com )")
+                VStack(alignment: .leading){
+                    Text("若有開啟阻擋廣告程式，請關閉以支持永續開發。")
+                    Text("歡迎試用我的其他 Apps！")
+                        .bold()
+                    Text("- 模擬面試：AI 面試練習")
+                    Text("- 吳維庭：照片位置紀錄")
+                    Text("- 學測個申分析")
+                    Text("- ClassMate：課表、課程管理")
+                    Text("請至 App Store 搜尋下載")
+                    Text("( 廣告洽談: ycdev@icloud.com )")
+                }
             }
             HStack{
                 Spacer()

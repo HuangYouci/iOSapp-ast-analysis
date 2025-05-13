@@ -204,6 +204,9 @@ struct ProView: View{
                 .buttonStyle(.plain)
                 .padding(.horizontal)
                 
+                Color.clear
+                    .padding(.bottom, 5)
+                
             }
             .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
             .background(Color(.secondarySystemBackground))

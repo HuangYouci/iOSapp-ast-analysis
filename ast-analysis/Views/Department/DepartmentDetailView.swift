@@ -313,7 +313,7 @@ struct DepartmentDetailView: View {
                                 Text(String(format: "%.2f", (Double(grade.SpecialPercentage)/100)+1))
                                     .frame(width: 50, alignment: .trailing)
                                 Text("=")
-                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) ))
+                                Text(String(format: "%.2f", totalScoreAfterBonus()))
                                     .frame(width: 60, alignment: .trailing)
                             }
                             HStack{
@@ -323,7 +323,7 @@ struct DepartmentDetailView: View {
                                 Text(String(format: "%.2f", department.resultTotalMultiplier))
                                     .frame(width: 50, alignment: .trailing)
                                 Text("=")
-                                Text(String(format: "%.2f", totalScore() * ( (Double(grade.SpecialPercentage)/100)+1 ) / totalMultiplier()))
+                                Text(String(format: "%.2f", totalScoreAfterBonus() / totalMultiplier()))
                                     .frame(width: 60, alignment: .trailing)
                             }
                         }
@@ -774,6 +774,86 @@ struct DepartmentDetailView: View {
     
     private func totalScore() -> Double {
         return (department.gsatchineseMultiplier * Double(grade.GsatCH) + department.gsatenglishMultiplier * Double(grade.GsatEN) + department.gsatmathaMultiplier * Double(grade.GsatMA) + department.gsatmathbMultiplier * Double(grade.GsatMB) + department.gsatscienceMultiplier * Double(grade.GsatSC) + department.gsatsocialMultiplier * Double(grade.GsatSO) + department.mathaMultiplier * Double(grade.AstMA) + department.mathbMultiplier * Double(grade.AstMB) + department.physicsMultiplier * Double(grade.AstPH) + department.chemistryMultiplier * Double(grade.AstCH) + department.biologyMultiplier * Double(grade.AstBI) + department.historyMultiplier * Double(grade.AstHI) + department.geometryMultiplier * Double(grade.AstGE) + department.socialMultiplier * Double(grade.AstSO))
+    }
+    
+    private func totalScoreAfterBonus() -> Double {
+        // 1. 加權後的各科分數總和 (Weighted Sum of Scores)
+        // 這部分的計算邏輯不變，因為乘以0倍率的科目自然不會貢獻分數
+        let weightedSumOfScores = (
+            department.gsatchineseMultiplier * Double(grade.GsatCH) +
+            department.gsatenglishMultiplier * Double(grade.GsatEN) +
+            department.gsatmathaMultiplier * Double(grade.GsatMA) +
+            department.gsatmathbMultiplier * Double(grade.GsatMB) +
+            department.gsatscienceMultiplier * Double(grade.GsatSC) +
+            department.gsatsocialMultiplier * Double(grade.GsatSO) +
+            department.mathaMultiplier * Double(grade.AstMA) +
+            department.mathbMultiplier * Double(grade.AstMB) +
+            department.physicsMultiplier * Double(grade.AstPH) +
+            department.chemistryMultiplier * Double(grade.AstCH) +
+            department.biologyMultiplier * Double(grade.AstBI) +
+            department.historyMultiplier * Double(grade.AstHI) +
+            department.geometryMultiplier * Double(grade.AstGE) +
+            department.socialMultiplier * Double(grade.AstSO)
+        )
+
+        // 2. 計算用於加分的 "原始分數總和" (Raw Sum of Scores for Bonus Calculation)
+        // 只有當該科目的倍率 > 0 時，才將其原始分數（算1倍）加入此總和
+        var rawSumOfScoresForBonus: Double = 0.0
+
+        if department.gsatchineseMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatCH)
+        }
+        if department.gsatenglishMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatEN)
+        }
+        if department.gsatmathaMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatMA)
+        }
+        if department.gsatmathbMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatMB)
+        }
+        if department.gsatscienceMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatSC)
+        }
+        if department.gsatsocialMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.GsatSO)
+        }
+        if department.mathaMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstMA)
+        }
+        if department.mathbMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstMB)
+        }
+        if department.physicsMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstPH)
+        }
+        if department.chemistryMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstCH)
+        }
+        if department.biologyMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstBI)
+        }
+        if department.historyMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstHI)
+        }
+        if department.geometryMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstGE)
+        }
+        if department.socialMultiplier > 0 {
+            rawSumOfScoresForBonus += Double(grade.AstSO)
+        }
+
+        // 3. 加分百分比 (Bonus Percentage as a factor)
+        // grade.SpecialPercentage 是 Int, 例如 25 代表 25%
+        let bonusFactor = Double(grade.SpecialPercentage) / 100.0 // 將 25 轉換為 0.25
+
+        // 4. 加分量 (Bonus Value based on the filtered raw scores)
+        let bonusValue = rawSumOfScoresForBonus * bonusFactor
+
+        // 5. 加分後的總分 (Weighted Sum of Scores + Bonus Value)
+        let finalScoreAfterBonus = weightedSumOfScores + bonusValue
+
+        return finalScoreAfterBonus
     }
     
     private func totalMultiplier() -> Double {

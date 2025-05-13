@@ -828,41 +828,114 @@ struct InputView: View {
     }
     
     private func directCalculateChance(department: Departments, grade: UserGrade) -> Double {
-        let departmentScore: Double = (Double(department.resultScore) ?? 1.0) / department.resultTotalMultiplier
-        let candidateScore: Double = (((department.gsatchineseMultiplier * Double(grade.GsatCH) + department.gsatenglishMultiplier * Double(grade.GsatEN) + department.gsatmathaMultiplier * Double(grade.GsatMA) + department.gsatmathbMultiplier * Double(grade.GsatMB) + department.gsatscienceMultiplier * Double(grade.GsatSC) + department.gsatsocialMultiplier * Double(grade.GsatSO) + department.mathaMultiplier * Double(grade.AstMA) + department.mathbMultiplier * Double(grade.AstMB) + department.physicsMultiplier * Double(grade.AstPH) + department.chemistryMultiplier * Double(grade.AstCH) + department.biologyMultiplier * Double(grade.AstBI) + department.historyMultiplier * Double(grade.AstHI) + department.geometryMultiplier * Double(grade.AstGE) + department.socialMultiplier * Double(grade.AstSO)) * ( (Double(grade.SpecialPercentage) / 100 ) + 1 )) / (department.gsatchineseMultiplier + department.gsatenglishMultiplier + department.gsatmathaMultiplier + department.gsatmathbMultiplier + department.gsatscienceMultiplier + department.gsatsocialMultiplier + department.mathaMultiplier + department.mathbMultiplier + department.physicsMultiplier + department.chemistryMultiplier + department.biologyMultiplier + department.historyMultiplier + department.geometryMultiplier + department.socialMultiplier))
-        // let fullScore: Double = 60.0
+        
+        let departmentScore: Double = (Double(department.resultScore) ?? 0.0) / department.resultTotalMultiplier // 使用 ?? 0.0 避免 department.resultScore 為 nil 的情況
+
+        // --- 計算 candidateScore (重點修改部分) ---
+        // 1. 加權後的各科分數總和 (Weighted Sum of Scores)
+        let weightedSumOfScores = (
+            department.gsatchineseMultiplier * Double(grade.GsatCH) +
+            department.gsatenglishMultiplier * Double(grade.GsatEN) +
+            department.gsatmathaMultiplier * Double(grade.GsatMA) +
+            department.gsatmathbMultiplier * Double(grade.GsatMB) +
+            department.gsatscienceMultiplier * Double(grade.GsatSC) +
+            department.gsatsocialMultiplier * Double(grade.GsatSO) +
+            department.mathaMultiplier * Double(grade.AstMA) +
+            department.mathbMultiplier * Double(grade.AstMB) +
+            department.physicsMultiplier * Double(grade.AstPH) +
+            department.chemistryMultiplier * Double(grade.AstCH) +
+            department.biologyMultiplier * Double(grade.AstBI) +
+            department.historyMultiplier * Double(grade.AstHI) +
+            department.geometryMultiplier * Double(grade.AstGE) +
+            department.socialMultiplier * Double(grade.AstSO)
+        )
+
+        // 2. 計算用於加分的 "原始分數總和" (Raw Sum of Scores for Bonus Calculation)
+        // 只有當該科目的倍率 > 0 時，才將其原始分數（算1倍）加入此總和
+        var rawSumOfScoresForBonus: Double = 0.0
+        if department.gsatchineseMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatCH) }
+        if department.gsatenglishMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatEN) }
+        if department.gsatmathaMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatMA) }
+        if department.gsatmathbMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatMB) }
+        if department.gsatscienceMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatSC) }
+        if department.gsatsocialMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.GsatSO) }
+        if department.mathaMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstMA) }
+        if department.mathbMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstMB) }
+        if department.physicsMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstPH) }
+        if department.chemistryMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstCH) }
+        if department.biologyMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstBI) }
+        if department.historyMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstHI) }
+        if department.geometryMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstGE) }
+        if department.socialMultiplier > 0 { rawSumOfScoresForBonus += Double(grade.AstSO) }
+
+        // 3. 加分百分比
+        let bonusFactor = Double(grade.SpecialPercentage) / 100.0
+
+        // 4. 加分量
+        let bonusValue = rawSumOfScoresForBonus * bonusFactor
+
+        // 5. 最終分子 (加權總分 + 基於採計科目的原始分數計算的加分量)
+        let candidateNumerator = weightedSumOfScores + bonusValue
+
+        // 6. 倍率總和 (分母)
+        let sumOfMultipliers = (
+            department.gsatchineseMultiplier + department.gsatenglishMultiplier +
+            department.gsatmathaMultiplier + department.gsatmathbMultiplier +
+            department.gsatscienceMultiplier + department.gsatsocialMultiplier +
+            department.mathaMultiplier + department.mathbMultiplier +
+            department.physicsMultiplier + department.chemistryMultiplier +
+            department.biologyMultiplier + department.historyMultiplier +
+            department.geometryMultiplier + department.socialMultiplier
+        )
+
+        // 7. 計算 candidateScore (處理分母為0的情況)
+        let candidateScore: Double
+        if sumOfMultipliers == 0 {
+            // 如果考生這邊的倍率總和為0，這意味著無法計算平均分
+            // 如果分子 (candidateNumerator) 也為0，則分數為0
+            // 如果分子不為0，但倍率為0，這是一個特殊情況，可能意味著該科系不看任何科目，
+            // 或者考生的成績不適用於這個科系的倍率規則。
+            // 這裡暫時將其分數視為0，或者你可以拋出錯誤或返回一個標記值。
+            // 另一種處理方式是，如果 sumOfMultipliers 為 0，則 candidateScore 直接等於 candidateNumerator
+            // (即不進行平均，直接使用總分) - 這取決於你的業務邏輯。
+            // 假設如果倍率和為0，平均分也為0。
+            candidateScore = 0.0
+            if candidateNumerator != 0 {
+                 print("Warning: sumOfMultipliers is 0 for candidate, but numerator is \(candidateNumerator). Setting candidateScore to 0.")
+            }
+        } else {
+            candidateScore = candidateNumerator / sumOfMultipliers
+        }
+
+        // --- 後續機率計算 (這部分保持不變) ---
         let sigmaFraction: Double = 0.1
         let sigma = sigmaFraction * departmentScore
-            
-        // 確保 sigma 不為 0
+                
+        // 確保 sigma 不為 0 (如果 departmentScore 為 0, sigma 也會是 0)
         guard sigma > 0 else {
+            // 如果標準差為0，意味著 departmentScore 是一個精確值 (或為0)
+            // 如果 candidateScore >= departmentScore，機率為100%，否則為0%
             return candidateScore >= departmentScore ? 1.0 : 0.0
         }
         
         // 計算 z 值
         let z = (candidateScore - departmentScore) / sigma
         
-        // 計算標準常態分布的 CDF (normalCDF 的邏輯)
+        // 計算標準常態分布的 CDF (Abramowitz and Stegun approximation)
         let zAbs = abs(z)
         let p = 0.2316419
-        let a1 = 0.319381530
-        let a2 = -0.356563782
-        let a3 = 1.781477937
-        let a4 = -1.821255978
-        let a5 = 1.330274429
+        let b1 = 0.319381530
+        let b2 = -0.356563782
+        let b3 = 1.781477937
+        let b4 = -1.821255978
+        let b5 = 1.330274429
         
         let t = 1.0 / (1.0 + p * zAbs)
-        let t2 = t * t
-        let t3 = t2 * t
-        let t4 = t3 * t
-        let t5 = t4 * t
         
-        let poly = a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5
-        let z2 = zAbs * zAbs
-        let phi = 1.0 - (1.0 / sqrt(2.0 * .pi)) * exp(-z2 / 2.0) * poly
+        let phi_of_z_abs_pdf = (1.0 / sqrt(2.0 * .pi)) * exp(-0.5 * zAbs * zAbs)
+        let cdf_approx = 1.0 - phi_of_z_abs_pdf * (b1*t + b2*pow(t,2) + b3*pow(t,3) + b4*pow(t,4) + b5*pow(t,5))
         
-        // 如果 z < 0，利用對稱性
-        let probability = z < 0 ? 1.0 - phi : phi
+        let probability = (z >= 0) ? cdf_approx : (1.0 - cdf_approx)
         
         return probability
     }
