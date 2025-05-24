@@ -36,7 +36,7 @@ struct MyAdView: View {
                     Text("若有開啟阻擋廣告程式，請關閉以支持永續開發。")
                     Text("歡迎試用我的其他 Apps！")
                         .bold()
-                    Text("- 模擬面試：AI 面試練習")
+                    Text("- AI 模擬：你的 AI 教練")
                     Text("- 吳維庭：照片位置紀錄")
                     Text("- 學測個申分析")
                     Text("- ClassMate：課表、課程管理")
