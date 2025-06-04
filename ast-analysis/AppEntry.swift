@@ -22,18 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 @main
 struct ast_analysisApp: App {
     
-    @StateObject var userData: UserData = UserData()
-    @StateObject var departmentData: DepartmentData = DepartmentData()
-    @StateObject var iapManager: IAPManager = IAPManager()
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(userData)
-                .environmentObject(departmentData)
-                .environmentObject(iapManager)
         }
     }
 }

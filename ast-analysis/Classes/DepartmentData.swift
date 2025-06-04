@@ -9,6 +9,9 @@ import SwiftCSV
 import Foundation
 
 class DepartmentData: ObservableObject {
+    
+    static let shared = DepartmentData()
+    
     @Published var departments: [Departments] = []
     
     init() {

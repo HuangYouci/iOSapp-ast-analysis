@@ -9,9 +9,17 @@ import SwiftUI
 
 class UserData: ObservableObject {
     
+    static let shared = UserData()
+    
     @Published var userData: User {
         didSet {
             UserDefaults.standard.set(try? JSONEncoder().encode(userData), forKey: "userData")
+        }
+    }
+    
+    @Published var tips: [String: Bool]{
+        didSet {
+            UserDefaults.standard.set(try? JSONEncoder().encode(tips), forKey: "tips")
         }
     }
     
@@ -21,6 +29,13 @@ class UserData: ObservableObject {
             self.userData = decodedUser
         } else {
             self.userData = User() // 預設值
+        }
+        
+        if let data = UserDefaults.standard.data(forKey: "tips"),
+           let decodedTips = try? JSONDecoder().decode([String: Bool].self, from: data){
+            self.tips = decodedTips
+        } else {
+            self.tips = [:]
         }
     }
     

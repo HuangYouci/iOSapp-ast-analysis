@@ -2,6 +2,7 @@ import StoreKit
 
 @MainActor
 class IAPManager: NSObject, ObservableObject {
+    
     static let shared = IAPManager()
     
     @Published var userPurchased = false

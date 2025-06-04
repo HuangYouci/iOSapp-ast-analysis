@@ -12,8 +12,6 @@ struct User: Identifiable, Codable {
     var id = UUID()
     var name: String = "用戶"
     var type: Int = 0
-    var favDept: [Departments] = []
-    var choDept: [Departments?] = Array(repeating: nil, count: 100)
     var grade: [UserGrade] = []
     var analyzeCount: Int = 0
 }
@@ -40,13 +38,8 @@ struct UserGrade: Identifiable, Codable {
     var SpecialType: Int
     var SpecialPercentage: Int
     // 系統分析
-    var analyse: [[Departments]] = [[]]
-}
-
-// For iPad - 視窗資料
-struct Window: Identifiable {
-    let id = UUID()
-    var offset: CGSize = .zero
-    var content: AnyView // 儲存視窗的內容
-    var name: String
+    var analyse: [Departments] = []
+    // 喜好與志願
+    var favDept: [Departments] = []
+    var choDept: [Departments?] = Array(repeating: nil, count: 100)
 }

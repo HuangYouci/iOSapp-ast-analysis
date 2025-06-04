@@ -13,7 +13,7 @@ struct ChoiceView: View {
     
     var body: some View {
         VStack(spacing: 0){
-            
+            /*
             HStack{
                 Spacer()
             }
@@ -82,7 +82,7 @@ struct ChoiceView: View {
             }
             .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
             .background(Color(.secondarySystemBackground))
-            
+            */
         }
         .navigationTitle("志願選填")
         .navigationBarTitleDisplayMode(.inline)

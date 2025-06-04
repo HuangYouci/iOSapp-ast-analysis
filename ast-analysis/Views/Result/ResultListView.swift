@@ -7,21 +7,17 @@
 
 import SwiftUI
 
-struct ResultView: View {
+struct ResultListView: View {
     
-    @EnvironmentObject private var userData: UserData
+    @StateObject private var userData: UserData = UserData.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0){
-            
             HStack{
-                Text("所有分析結果")
-                    .font(.largeTitle)
-                    .bold()
                 Spacer()
             }
             .padding(.horizontal)
-            .padding(.bottom, 10)
+            .padding(.bottom, 1)
             
             VStack{
                 VStack(alignment: .leading){
@@ -56,7 +52,7 @@ struct ResultView: View {
                 .padding(.bottom, 5)
                 
                 ForEach(userData.userData.grade) { item in
-                    NavigationLink(destination: EachResultView(resultID: item.id)){
+                    NavigationLink(destination: ResultDetailView(result: item)){
                         VStack(alignment: .leading){
                             HStack{
                                 Text(item.dataName)
@@ -182,6 +178,7 @@ struct ResultView: View {
                                     
                                 }
                             }
+                            .scrollIndicators(.hidden)
                         }
                         .padding()
                         .background(Color(.systemBackground))
@@ -196,12 +193,11 @@ struct ResultView: View {
             .background(Color(.secondarySystemBackground))
         }
         .navigationTitle("分析結果")
-        .toolbar(.hidden)
+        .navigationBarTitleDisplayMode(.inline)
     }
     
 }
 
 #Preview {
-    ResultView()
-        .environmentObject(UserData())
+    ResultListView()
 }

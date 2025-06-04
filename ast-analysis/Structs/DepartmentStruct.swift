@@ -10,7 +10,7 @@ import Foundation
 struct Departments: Identifiable, Codable {
     // UUID 屬性
     var id = UUID()
-    // 輸入屬性
+    // MARK: - 輸入屬性
     let schoolid: String
     let departmentid: String
     let schoolname: String
@@ -47,7 +47,8 @@ struct Departments: Identifiable, Codable {
     let resultCombine: String
     let resultPeople: String
     let resultScore: String
-    // 計算屬性
+    // MARK: - 計算屬性
+    // 在建立時就創建好的
     var fullname: String {
         return schoolname + departmentname
     }
@@ -127,7 +128,7 @@ struct Departments: Identifiable, Codable {
     var gsatskillMultiplier: Double {
         if gsatskill.isEmpty { return 0.0 }
         let multiplierString = gsatskill.replacingOccurrences(of: "x", with: "")
-        return Double(multiplierString) ?? 1.0 // 預設為 1.0，因為它是倍率
+        return Double(multiplierString) ?? 1.0
     }
     var resultCombineArray: [(String, Double)] {
         if resultCombine == "#N/A" || resultCombine.isEmpty {
@@ -170,7 +171,6 @@ struct Departments: Identifiable, Codable {
         
         return result
     }
-    
     var resultTotalMultiplier: Double {
         let result = resultCombineArray.reduce(0.0) {
             $0 + ($1.1.isNaN ? 0.0 : $1.1)
@@ -181,6 +181,14 @@ struct Departments: Identifiable, Codable {
             return 1.0
         }
     }
-    // 後續計算屬性
+    // 後續計算屬性 依結果
     var calculatedPercent: Double = 0
+    var calculatedType: DepartmentCalculatedType = .notCaluclated
+}
+
+enum DepartmentCalculatedType: Codable {
+    case notCaluclated
+    case normal
+    case nodata
+    case nopass
 }

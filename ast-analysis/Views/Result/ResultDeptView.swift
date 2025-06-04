@@ -1,24 +1,17 @@
 //
-//  DepartmentDetailView.swift
+//  ResultDeptView.swift
 //  ast-analysis
 //
-//  Created by 黃宥琦 on 2025/3/21.
+//  Created by 黃宥琦 on 2025/6/4.
 //
 
 import SwiftUI
 import Foundation
 
-struct DepartmentDetailView: View {
-    
-    @EnvironmentObject private var departmentData: DepartmentData
-    @State private var aiInfo: String = ""
+struct ResultDeptView: View {
     
     let department: Departments
     let grade: UserGrade
-    
-    var displayMore: Bool {
-        return grade.id != UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-    }
     
     var body: some View{
         
@@ -65,47 +58,84 @@ struct DepartmentDetailView: View {
                 Color.clear
                     .padding(.bottom, 5)
                 
-                if displayMore {
-                    VStack(alignment: .leading){
-                        HStack(alignment: .center){
-                            Image(systemName: "medal.star")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 18, height: 18)
-                            Text("錄取機率")
-                            Spacer()
-                        }
-                        .bold()
-                        .padding(.bottom, 10)
-                        
-                        if department.resultCombineArray.isEmpty {
-                             
-                            Text("?%")
+                VStack(alignment: .leading){
+                    
+                    HStack(alignment: .center){
+                        Image(systemName: "medal.star")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                        Text("錄取機率")
+                        Spacer()
+                    }
+                    .bold()
+                    .padding(.bottom, 10)
+                    
+                    switch (department.calculatedType){
+                    case .notCaluclated:
+                        VStack(alignment: .leading){
+                            Text("--%")
                                 .font(.title3)
                                 .bold()
                                 .padding(.bottom, 5)
-                            
-                            Text("沒有去年的錄取分數，因此無法計算。")
+                            Text("系統尚未計算本科系的錄取機率。")
                                 .font(.caption)
                                 .foregroundStyle(Color(.systemGray2))
-                            
-                        } else {
-                            
+                        }
+                    case .normal:
+                        VStack(alignment: .leading){
                             Text(String(format: "%.0f%%", department.calculatedPercent * 100))
                                 .font(.title3)
                                 .bold()
                                 .padding(.bottom, 5)
-                            
-                            Text("錄取機率乃基於去年分數算出，建立於常態分布模型。僅供參考，分發入學志願序無需過於斟酌，按自己喜歡的即可。")
+                            switch(department.calculatedPercent * 100){
+                            case 80...100:
+                                Text("保底")
+                                    .font(.caption)
+                                    .foregroundColor(Color(red: 0.1, green: 0.6, blue: 0.2))
+                            case 60..<80:
+                                Text("安全")
+                                    .font(.caption)
+                                    .foregroundColor(Color(.systemGreen))
+                            case 40..<60:
+                                Text("一般")
+                                    .font(.caption)
+                                    .foregroundColor(Color.accentColor)
+                            case 20..<40:
+                                Text("進攻")
+                                    .font(.caption)
+                                    .foregroundColor(Color(.red))
+                            default:
+                                Text("夢幻")
+                                    .font(.caption)
+                                    .foregroundColor(Color(.purple))
+                            }
+                        }
+                    case .nopass:
+                        VStack(alignment: .leading){
+                            Text("0%")
+                                .font(.title3)
+                                .bold()
+                                .padding(.bottom, 5)
+                            Text("未通過本科系檢定（" + checkAvailablity().joined(separator: "、") + "）")
                                 .font(.caption)
                                 .foregroundStyle(Color(.systemGray2))
-                            
+                        }
+                    case .nodata:
+                        VStack(alignment: .leading){
+                            Text("--%")
+                                .font(.title3)
+                                .bold()
+                                .padding(.bottom, 5)
+                            Text("沒有去年的錄取分數，因此無法計算。")
+                                .font(.caption)
+                                .foregroundStyle(Color(.systemGray2))
                         }
                     }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
@@ -130,90 +160,74 @@ struct DepartmentDetailView: View {
                             VStack{
                                 Text("科目")
                                 Text("檢定")
-                                if displayMore {
-                                    Text("你的")
-                                }
+                                Text("你的")
                             }
                             .bold()
                             if !department.chinesetest.isEmpty {
                                 VStack{
                                     Text("國文")
                                     Text(department.chinesetest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatCH, type: 0))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatCH, type: 0, goal: department.chinesetest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatCH, type: 0))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatCH, type: 0, goal: department.chinesetest) ? .green : .red))
                                 }
                             }
                             if !department.englishtest.isEmpty {
                                 VStack{
                                     Text("英文")
                                     Text(department.englishtest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatEN, type: 1))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatEN, type: 1, goal: department.englishtest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatEN, type: 1))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatEN, type: 1, goal: department.englishtest) ? .green : .red))
                                 }
                             }
                             if !department.mathatest.isEmpty {
                                 VStack{
                                     Text("數Ａ")
                                     Text(department.mathatest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatMA, type: 2))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatMA, type: 2, goal: department.mathatest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatMA, type: 2))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatMA, type: 2, goal: department.mathatest) ? .green : .red))
                                 }
                             }
                             if !department.mathbtest.isEmpty {
                                 VStack{
                                     Text("數Ｂ")
                                     Text(department.mathbtest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatMB, type: 3))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatMB, type: 3, goal: department.mathbtest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatMB, type: 3))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatMB, type: 3, goal: department.mathbtest) ? .green : .red))
                                 }
                             }
                             if !department.sciencetest.isEmpty {
                                 VStack{
                                     Text("自然")
                                     Text(department.sciencetest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatSC, type: 4))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatSC, type: 4, goal: department.sciencetest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatSC, type: 4))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatSC, type: 4, goal: department.sciencetest) ? .green : .red))
                                 }
                             }
                             if !department.socialtest.isEmpty {
                                 VStack{
                                     Text("社會")
                                     Text(department.socialtest)
-                                    if displayMore {
-                                        Text(turnToTestString(mine: grade.GsatSO, type: 5))
-                                            .foregroundStyle(Color(checkTestPassed(you: grade.GsatSO, type: 5, goal: department.socialtest) ? .green : .red))
-                                    }
+                                    Text(turnToTestString(mine: grade.GsatSO, type: 5))
+                                        .foregroundStyle(Color(checkTestPassed(you: grade.GsatSO, type: 5, goal: department.socialtest) ? .green : .red))
                                 }
                             }
                             if !department.englishlistentest.isEmpty {
                                 VStack{
                                     Text("英聽")
                                     Text(department.englishlistentest)
-                                    if displayMore {
-                                        switch grade.GsatEL {
-                                        case 3:
-                                            Text("A級")
-                                                .foregroundStyle(Color(.green))
-                                        case 2:
-                                            Text("B級")
-                                                .foregroundStyle(Color( department.englishlistentest == "A級" ? .red : .green))
-                                        case 1:
-                                            Text("C級")
-                                                .foregroundStyle(Color( department.englishlistentest == "A級" || department.englishlistentest == "B級" ? .red : .green))
-                                        default:
-                                            Text("F級")
-                                                .foregroundStyle(Color(.red))
-                                        }
+                                    switch grade.GsatEL {
+                                    case 3:
+                                        Text("A級")
+                                            .foregroundStyle(Color(.green))
+                                    case 2:
+                                        Text("B級")
+                                            .foregroundStyle(Color( department.englishlistentest == "A級" ? .red : .green))
+                                    case 1:
+                                        Text("C級")
+                                            .foregroundStyle(Color( department.englishlistentest == "A級" || department.englishlistentest == "B級" ? .red : .green))
+                                    default:
+                                        Text("F級")
+                                            .foregroundStyle(Color(.red))
                                     }
                                 }
                             }
@@ -239,18 +253,14 @@ struct DepartmentDetailView: View {
                     HStack{
                         Text("科目")
                         Spacer()
-                        if displayMore {
-                            Text("原始")
-                                .frame(width: 50, alignment: .trailing)
-                            Text("×")
-                        }
+                        Text("原始")
+                            .frame(width: 50, alignment: .trailing)
+                        Text("×")
                         Text("倍率")
                             .frame(width: 50, alignment: .trailing)
-                        if displayMore {
-                            Text("=")
-                            Text("成績")
-                                .frame(width: 60, alignment: .trailing)
-                        }
+                        Text("=")
+                        Text("成績")
+                            .frame(width: 60, alignment: .trailing)
                     }
                     .bold()
                     
@@ -282,52 +292,48 @@ struct DepartmentDetailView: View {
                     
                     scoreGenerator(name: "公民", score: grade.AstSO, multiplier: department.socialMultiplier)
                     
-                    if displayMore {
-                        
+                    Divider()
+                    
+                    HStack{
+                        Text("總成績")
+                        Spacer()
+                        Text(String(format: "%.2f", totalScore()))
+                    }
+                    
+                    HStack{
+                        Text("平均級分")
+                        Spacer()
+                        Text("÷")
+                        Text(String(format: "%.2f", totalMultiplier()))
+                            .frame(width: 50, alignment: .trailing)
+                        Text("=")
+                        Text(String(format: "%.2f", totalScore() / totalMultiplier()))
+                            .frame(width: 60, alignment: .trailing)
+                    }
+                    
+                    if grade.SpecialPercentage > 0 {
                         Divider()
-                        
                         HStack{
-                            Text("總成績")
+                            Text("加分總成績")
                             Spacer()
                             Text(String(format: "%.2f", totalScore()))
-                        }
-                        
-                        HStack{
-                            Text("平均級分")
-                            Spacer()
-                            Text("÷")
-                            Text(String(format: "%.2f", totalMultiplier()))
+                            Text("×")
+                            Text(String(format: "%.2f", (Double(grade.SpecialPercentage)/100)+1))
                                 .frame(width: 50, alignment: .trailing)
                             Text("=")
-                            Text(String(format: "%.2f", totalScore() / totalMultiplier()))
+                            Text(String(format: "%.2f", totalScoreAfterBonus()))
                                 .frame(width: 60, alignment: .trailing)
                         }
-                        
-                        if grade.SpecialPercentage > 0 {
-                            Divider()
-                            HStack{
-                                Text("加分總成績")
-                                Spacer()
-                                Text(String(format: "%.2f", totalScore()))
-                                Text("×")
-                                Text(String(format: "%.2f", (Double(grade.SpecialPercentage)/100)+1))
-                                    .frame(width: 50, alignment: .trailing)
-                                Text("=")
-                                Text(String(format: "%.2f", totalScoreAfterBonus()))
-                                    .frame(width: 60, alignment: .trailing)
-                            }
-                            HStack{
-                                Text("加分平均級分")
-                                Spacer()
-                                Text("÷")
-                                Text(String(format: "%.2f", department.resultTotalMultiplier))
-                                    .frame(width: 50, alignment: .trailing)
-                                Text("=")
-                                Text(String(format: "%.2f", totalScoreAfterBonus() / totalMultiplier()))
-                                    .frame(width: 60, alignment: .trailing)
-                            }
+                        HStack{
+                            Text("加分平均級分")
+                            Spacer()
+                            Text("÷")
+                            Text(String(format: "%.2f", department.resultTotalMultiplier))
+                                .frame(width: 50, alignment: .trailing)
+                            Text("=")
+                            Text(String(format: "%.2f", totalScoreAfterBonus() / totalMultiplier()))
+                                .frame(width: 60, alignment: .trailing)
                         }
-                        
                     }
                     
                 }
@@ -351,16 +357,16 @@ struct DepartmentDetailView: View {
                             .foregroundStyle(Color(.systemGray2))
                     } else {
                         HStack{
-                            Text("科目")
-                            Spacer()
-                            Text("倍率")
-                        }
-                        .bold()
-                        ForEach(department.resultCombineArray, id: \.0) { subject, score in
-                            HStack{
-                                Text(subject)
-                                Spacer()
-                                Text(String(format: "%.2f", score))
+                            VStack{
+                                Text("科目")
+                                Text("倍率")
+                            }
+                            .bold()
+                            ForEach(department.resultCombineArray, id: \.0) { subject, score in
+                                VStack{
+                                    Text(subject)
+                                    Text(String(format: "%.2f", score))
+                                }
                             }
                         }
                         Divider()
@@ -385,55 +391,69 @@ struct DepartmentDetailView: View {
                 .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
-                if displayMore {
-                    VStack(alignment: .leading){
-                        HStack(alignment: .center){
-                            Image(systemName: "ruler")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 18, height: 18)
-                            Text("差距計算")
-                            Spacer()
-                        }
-                        .bold()
-                        .padding(.bottom, 10)
+                VStack(alignment: .leading){
+                    HStack(alignment: .center){
+                        Image(systemName: "ruler")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                        Text("差距計算")
+                        Spacer()
+                    }
+                    .bold()
+                    .padding(.bottom, 10)
+                    
+                    if let resultScoreValue = Double(department.resultScore) {
+                        let resultScoreAverage = resultScoreValue / department.resultTotalMultiplier
+                        let resultScoreToNow = resultScoreAverage * totalMultiplier() // 去年分數轉換今年總分
+                        let scoreDiff = resultScoreToNow - totalScore() // 差距總分
+                        let scoreAverageDiff = scoreDiff / totalMultiplier() // 差距平均
                         
-                        if let resultScoreValue = Double(department.resultScore) {
-                            let resultScoreAverage = resultScoreValue / department.resultTotalMultiplier
-                            let resultScoreToNow = resultScoreAverage * totalMultiplier() // 去年分數轉換今年總分
-                            let scoreDiff = resultScoreToNow - totalScore() // 差距總分
-                            
-                            let scoreAverageDiff = scoreDiff / totalMultiplier() // 差距平均
-                            
-                            if scoreDiff > 0 {
-                                HStack {
-                                    Text("低於去年最低錄取分數")
-                                    Spacer()
-                                    Text(String(format: "%.2f", scoreDiff))
-                                    Text(String(format: "(%.2f)", scoreAverageDiff))
-                                }
-                            } else {
-                                HStack {
-                                    Text("高於去年最低錄取分數")
-                                    Spacer()
-                                    Text(String(format: "%.2f", -scoreDiff))
-                                    Text(String(format: "(%.2f)", -scoreAverageDiff))
-                                }
+                        HStack{
+                            Text("你的分數")
+                            Spacer()
+                            Text(String(format: "%.2f", totalScore()))
+                            Text(String(format: "(%.2f)", totalScore()/totalMultiplier()))
+                        }
+                        HStack{
+                            Text("目標分數")
+                            if(resultScoreToNow != resultScoreValue){
+                                Text("（經轉換）")
                             }
-                            
+                            Spacer()
+                            Text(String(format: "%.2f", resultScoreToNow))
+                            Text(String(format: "(%.2f)", resultScoreToNow/totalMultiplier()))
+                        }
+                        Divider()
+                        
+                        if scoreDiff > 0 {
+                            HStack {
+                                Text("低於去年最低錄取分數")
+                                Spacer()
+                                Text(String(format: "%.2f", scoreDiff))
+                                Text(String(format: "(%.2f)", scoreAverageDiff))
+                            }
                         } else {
                             HStack {
-                                Text("無去年最低錄取分數資料")
+                                Text("高於去年最低錄取分數")
                                 Spacer()
-                                Text("N/A")
+                                Text(String(format: "%.2f", -scoreDiff))
+                                Text(String(format: "(%.2f)", -scoreAverageDiff))
                             }
                         }
                         
+                    } else {
+                        HStack {
+                            Text("無去年最低錄取分數資料")
+                            Spacer()
+                            Text("N/A")
+                        }
                     }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    
                 }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 VStack(alignment: .leading){
                     HStack(alignment: .center){
@@ -446,35 +466,25 @@ struct DepartmentDetailView: View {
                     }
                     .bold()
                     .padding(.bottom, 10)
-                    FlowLayout{
+                    HStack{
                         if !department.samecompare1.isEmpty {
-                            VStack{
-                                Text(department.samecompare1)
-                            }
+                            Text(department.samecompare1)
                         }
                         if !department.samecompare2.isEmpty {
-                            Image(systemName: "arrow.right")
-                            VStack{
-                                Text(department.samecompare2)
-                            }
+                            Text("→")
+                            Text(department.samecompare2)
                         }
                         if !department.samecompare3.isEmpty {
-                            Image(systemName: "arrow.right")
-                            VStack{
-                                Text(department.samecompare3)
-                            }
+                            Text("→")
+                            Text(department.samecompare3)
                         }
                         if !department.samecompare4.isEmpty {
-                            Image(systemName: "arrow.right")
-                            VStack{
-                                Text(department.samecompare4)
-                            }
+                            Text("→")
+                            Text(department.samecompare4)
                         }
                         if !department.samecompare5.isEmpty {
-                            Image(systemName: "arrow.right")
-                            VStack{
-                                Text(department.samecompare5)
-                            }
+                            Text("→")
+                            Text(department.samecompare5)
                         }
                     }
                 }
@@ -523,17 +533,13 @@ struct DepartmentDetailView: View {
                 HStack{
                     Text(name)
                     Spacer()
-                    if displayMore {
-                        Text("\(score)")
-                        Text("×")
-                    }
+                    Text("\(score)")
+                    Text("×")
                     Text(String(format: "%.2f", multiplier))
                         .frame(width: 50, alignment: .trailing)
-                    if displayMore {
-                        Text("=")
-                        Text(String(format: "%.2f", Double(score) * multiplier))
-                            .frame(width: 60, alignment: .trailing)
-                    }
+                    Text("=")
+                    Text(String(format: "%.2f", Double(score) * multiplier))
+                        .frame(width: 60, alignment: .trailing)
                 }
                 )
         } else {
@@ -860,69 +866,227 @@ struct DepartmentDetailView: View {
         return (department.gsatchineseMultiplier + department.gsatenglishMultiplier + department.gsatmathaMultiplier + department.gsatmathbMultiplier + department.gsatscienceMultiplier + department.gsatsocialMultiplier + department.mathaMultiplier + department.mathbMultiplier + department.physicsMultiplier + department.chemistryMultiplier + department.biologyMultiplier + department.historyMultiplier + department.geometryMultiplier + department.socialMultiplier)
     }
     
+    private func checkAvailablity() -> [String] {
+        var reason: [String] = []
+        // 檢定
+        switch department.chinesetest {
+        case "頂標":
+            if grade.GsatCH <= LevelConstants.CHLevel1 {
+                reason.append("國文未達頂標")
+            }
+        case "前標":
+            if grade.GsatCH <= LevelConstants.CHLevel2 {
+                reason.append("國文未達前標")
+            }
+        case "均標":
+            if grade.GsatCH <= LevelConstants.CHLevel3 {
+                reason.append("國文未達均標")
+            }
+        case "後標":
+            if grade.GsatCH <= LevelConstants.CHLevel4 {
+                reason.append("國文未達後標")
+            }
+        case "底標":
+            if grade.GsatCH <= LevelConstants.CHLevel5 {
+                reason.append("國文未達底標")
+            }
+        default:
+            break
+        }
+        switch department.englishtest {
+        case "頂標":
+            if grade.GsatEN <= LevelConstants.ENLevel1 {
+                reason.append("英文未達頂標")
+            }
+        case "前標":
+            if grade.GsatEN <= LevelConstants.ENLevel2 {
+                reason.append("英文未達前標")
+            }
+        case "均標":
+            if grade.GsatEN <= LevelConstants.ENLevel3 {
+                reason.append("英文未達均標")
+            }
+        case "後標":
+            if grade.GsatEN <= LevelConstants.ENLevel4 {
+                reason.append("英文未達後標")
+            }
+        case "底標":
+            if grade.GsatEN <= LevelConstants.ENLevel5 {
+                reason.append("英文未達底標")
+            }
+        default:
+            break
+        }
+        switch department.mathatest {
+        case "頂標":
+            if grade.GsatMA <= LevelConstants.MALevel1 {
+                reason.append("數Ａ未達頂標")
+            }
+        case "前標":
+            if grade.GsatMA <= LevelConstants.MALevel2 {
+                reason.append("數Ａ未達前標")
+            }
+        case "均標":
+            if grade.GsatMA <= LevelConstants.MALevel3 {
+                reason.append("數Ａ未達均標")
+            }
+        case "後標":
+            if grade.GsatMA <= LevelConstants.MALevel4 {
+                reason.append("數Ａ未達後標")
+            }
+        case "底標":
+            if grade.GsatMA <= LevelConstants.MALevel5 {
+                reason.append("數Ａ未達底標")
+            }
+        default:
+            break
+        }
+        switch department.mathbtest {
+        case "頂標":
+            if grade.GsatMB <= LevelConstants.MBLevel1 {
+                reason.append("數Ｂ未達頂標")
+            }
+        case "前標":
+            if grade.GsatMB <= LevelConstants.MBLevel2 {
+                reason.append("數Ｂ未達前標")
+            }
+        case "均標":
+            if grade.GsatMB <= LevelConstants.MBLevel3 {
+                reason.append("數Ｂ未達均標")
+            }
+        case "後標":
+            if grade.GsatMB <= LevelConstants.MBLevel4 {
+                reason.append("數Ｂ未達後標")
+            }
+        case "底標":
+            if grade.GsatMB <= LevelConstants.MBLevel5 {
+                reason.append("數Ｂ未達底標")
+            }
+        default:
+            break
+        }
+        switch department.sciencetest {
+        case "頂標":
+            if grade.GsatSC <= LevelConstants.SCLevel1 {
+                reason.append("自然未達頂標")
+            }
+        case "前標":
+            if grade.GsatSC <= LevelConstants.SCLevel2 {
+                reason.append("自然未達前標")
+            }
+        case "均標":
+            if grade.GsatSC <= LevelConstants.SCLevel3 {
+                reason.append("自然未達均標")
+            }
+        case "後標":
+            if grade.GsatSC <= LevelConstants.SCLevel4 {
+                reason.append("自然未達後標")
+            }
+        case "底標":
+            if grade.GsatSC <= LevelConstants.SCLevel5 {
+                reason.append("自然未達底標")
+            }
+        default:
+            break
+        }
+        switch department.socialtest {
+        case "頂標":
+            if grade.GsatSO <= LevelConstants.SOLevel1 {
+                reason.append("社會未達頂標")
+            }
+        case "前標":
+            if grade.GsatSO <= LevelConstants.SOLevel2 {
+                reason.append("社會未達前標")
+            }
+        case "均標":
+            if grade.GsatSO <= LevelConstants.SOLevel3 {
+                reason.append("社會未達均標")
+            }
+        case "後標":
+            if grade.GsatSO <= LevelConstants.SOLevel4 {
+                reason.append("社會未達後標")
+            }
+        case "底標":
+            if grade.GsatSO <= LevelConstants.SOLevel5 {
+                reason.append("社會未達底標")
+            }
+        default:
+            break
+        }
+        switch grade.GsatEL {
+        case 3: // A級
+            break
+        case 2: // B級
+            if (department.englishlistentest == "A級"){
+                reason.append("英聽未達A級")
+            }
+        case 1: // C級
+            if (department.englishlistentest == "A級"){
+                reason.append("英聽未達A級")
+            } else if ( department.englishlistentest == "B級" ) {
+                reason.append("英聽未達B級")
+            }
+        default: // F級或其他
+            if (department.englishlistentest == "A級"){
+                reason.append("英聽未達A級")
+            } else if ( department.englishlistentest == "B級" ) {
+                reason.append("英聽未達B級")
+            } else if ( department.englishlistentest == "C級" ) {
+                reason.append("英聽未達C級")
+            }
+        }
+        
+        // 考試
+        if department.gsatchineseMultiplier > 0 && grade.GsatCH < 0 {
+            reason.append("未報考國文")
+        }
+        if department.gsatenglishMultiplier > 0 && grade.GsatEN < 0 {
+            reason.append("未報考英文")
+        }
+        if department.gsatmathaMultiplier > 0 && grade.GsatMA < 0 {
+            reason.append("未報考數Ａ")
+        }
+        if department.gsatmathbMultiplier > 0 && grade.GsatMB < 0 {
+            reason.append("未報考數Ｂ")
+        }
+        if department.gsatscienceMultiplier > 0 && grade.GsatSC < 0 {
+            reason.append("未報考自然")
+        }
+        if department.gsatsocialMultiplier > 0 && grade.GsatSO < 0 {
+            reason.append("未報考社會")
+        }
+        // 分科測驗科目
+        if department.mathaMultiplier > 0 && grade.AstMA < 0 {
+            reason.append("未報考數甲")
+        }
+        if department.mathbMultiplier > 0 && grade.AstMB < 0 {
+            reason.append("未報考數乙")
+        }
+        if department.physicsMultiplier > 0 && grade.AstPH < 0 {
+            reason.append("未報考物理")
+        }
+        if department.chemistryMultiplier > 0 && grade.AstCH < 0 {
+            reason.append("未報考化學")
+        }
+        if department.biologyMultiplier > 0 && grade.AstBI < 0 {
+            reason.append("未報考生物")
+        }
+        if department.historyMultiplier > 0 && grade.AstHI < 0 {
+            reason.append("未報考歷史")
+        }
+        if department.geometryMultiplier > 0 && grade.AstGE < 0 {
+            reason.append("未報考地理")
+        }
+        if department.socialMultiplier > 0 && grade.AstSO < 0 {
+            reason.append("未報考公民")
+        }
+        
+        return reason
+        
+    }
+
 }
 
-#Preview("無資料") {
-    let emptyUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-    let departmentData = DepartmentData()
-    
-    // 選擇隨機的 Department，如果 departments 為空則使用預設值
-    let department = departmentData.departments.randomElement()!
-    
-    let emptyGrade = UserGrade(
-        id: emptyUUID,
-        dataName: "無資料",
-        GsatCH: -1,
-        GsatEN: -1,
-        GsatMA: -1,
-        GsatMB: -1,
-        GsatSO: -1,
-        GsatSC: -1,
-        GsatEL: -1,
-        AstMA: -1,
-        AstMB: -1,
-        AstPH: -1,
-        AstCH: -1,
-        AstBI: -1,
-        AstHI: -1,
-        AstGE: -1,
-        AstSO: -1,
-        SpecialType: 0,
-        SpecialPercentage: 0
-    )
-    
-    DepartmentDetailView(department: department, grade: emptyGrade)
-        .environmentObject(departmentData)
-}
-
-#Preview("有資料") {
-    let departmentData = DepartmentData()
-    
-    // 選擇隨機的 Department，如果 departments 為空則使用預設值
-    let department = departmentData.departments[2]
-    
-    let grade = UserGrade(
-        id: UUID(),
-        dataName: "模擬成績",
-        GsatCH: Int.random(in: 0...60),
-        GsatEN: Int.random(in: 0...60),
-        GsatMA: Int.random(in: 0...60),
-        GsatMB: Int.random(in: 0...60),
-        GsatSO: Int.random(in: 0...60),
-        GsatSC: Int.random(in: 0...60),
-        GsatEL: 3, // 固定為 3
-        AstMA: Int.random(in: 0...60),
-        AstMB: Int.random(in: 0...60),
-        AstPH: Int.random(in: 0...60),
-        AstCH: Int.random(in: 0...60),
-        AstBI: Int.random(in: 0...60),
-        AstHI: Int.random(in: 0...60),
-        AstGE: Int.random(in: 0...60),
-        AstSO: Int.random(in: 0...60),
-        SpecialType: 0,
-        SpecialPercentage: 0
-    )
-    
-    DepartmentDetailView(department: department, grade: grade)
-        .environmentObject(departmentData)
+#Preview {
+    ResultDeptView(department: UserData.shared.userData.grade.first!.analyse[23], grade:UserData.shared.userData.grade.first!)
 }

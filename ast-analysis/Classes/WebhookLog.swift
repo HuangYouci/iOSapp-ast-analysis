@@ -10,7 +10,7 @@ import Foundation
 class WebhookLog {
     func logA(title: String, description: String, color: Int = 0x3498db, fields: [(String, String)] = []) {
         
-        let webhookURL: String = "https://discord.com/api/webhooks/1366059454327685191/m6nA-HOQ-xh_Lxr8SLgkcmVd2EzNH1QikjMWSSZCn5w7RD8_08y2P1T1jVBf_3qv6S4x"
+        let webhookURL: String = "https://discord.com/api/webhooks/1379734004391088259/wEEOBzgw7Tvp2voTDXQ5eWP7HubdsjZFl1fw9r79_Xsx_zWOa09MIb55Y1Ik9eHd1uXR"
         
         var embedFields: [[String: String]] = []
         for (name, value) in fields {
@@ -54,7 +54,7 @@ class WebhookLog {
     }
     func logB(title: String, description: String, color: Int = 0x3498db, fields: [(String, String)] = []) {
         
-        let webhookURL: String = "https://discord.com/api/webhooks/1366069571152515112/5Tc6K8LNAVyfwKZaMg-U-VahgAwI8iI7nA8RO4U77OdnnsqaJ3hU30C8120v6WjRHeQC"
+        let webhookURL: String = "https://discord.com/api/webhooks/1379734188059525122/08LsOVzQWAOpHzQ4zzAC37q0StvgdmUXaeIDKeM0rs4gTSzlOrre9Pjg1jFqvrijUmY8"
         
         var embedFields: [[String: String]] = []
         for (name, value) in fields {

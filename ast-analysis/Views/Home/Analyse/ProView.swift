@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ProView: View{
-    @EnvironmentObject private var iapManager: IAPManager
-    @EnvironmentObject private var userData: UserData
+    @StateObject private var iapManager: IAPManager = IAPManager.shared
+    @StateObject private var userData: UserData = UserData.shared
     var body: some View {
         VStack(spacing: 0){
             
@@ -245,6 +245,4 @@ struct ProView: View{
 
 #Preview{
     ProView()
-        .environmentObject(UserData())
-        .environmentObject(IAPManager())
 }
