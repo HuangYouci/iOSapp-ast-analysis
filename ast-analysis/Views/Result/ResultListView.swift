@@ -51,8 +51,9 @@ struct ResultListView: View {
                 Color.clear
                 .padding(.bottom, 5)
                 
-                ForEach(userData.userData.grade) { item in
-                    NavigationLink(destination: ResultDetailView(result: item)){
+                ForEach(userData.userData.grade.indices, id: \.self) { index in
+                    NavigationLink(destination: ResultDetailView(result: $userData.userData.grade[index])){
+                        let item = userData.userData.grade[index]
                         VStack(alignment: .leading){
                             HStack{
                                 Text(item.dataName)

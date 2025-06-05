@@ -11,9 +11,7 @@ import Foundation
 struct ResultDeptView: View {
     
     let department: Departments
-    let grade: UserGrade
-    
-    @StateObject var userData: UserData = UserData.shared
+    @Binding var grade: UserGrade
     
     var body: some View{
         
@@ -532,17 +530,13 @@ struct ResultDeptView: View {
                 Group {
                     if grade.favDept.contains(department.code){
                         Button {
-                            if let index = userData.userData.grade.firstIndex(where: { $0.id == grade.id }) {
-                                    userData.userData.grade[index].favDept.removeAll(where:{ $0 == department.code })
-                                }
+                            grade.favDept.removeAll(where: { $0 == department.code })
                         } label: {
                             Image(systemName: "heart.fill")
                         }
                     } else {
                         Button {
-                            if let index = userData.userData.grade.firstIndex(where: { $0.id == grade.id }) {
-                                userData.userData.grade[index].favDept.append(department.code)
-                            }
+                            grade.favDept.append(department.code)
                         } label: {
                             Image(systemName: "heart")
                         }
@@ -1113,5 +1107,8 @@ struct ResultDeptView: View {
 }
 
 #Preview {
-    ResultDeptView(department: UserData.shared.userData.grade.first!.analyse[23], grade:UserData.shared.userData.grade.first!)
+    ResultDeptView(
+        department: UserData.shared.userData.grade.first!.analyse[23],
+        grade: .constant(UserData.shared.userData.grade.first!)
+    )
 }

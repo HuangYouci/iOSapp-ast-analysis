@@ -9,6 +9,15 @@ import SwiftUI
 
 struct ResultFavView: View {
     
+    @Binding var result: UserGrade
+    
+    private var depts: [Departments] {
+        result.favDept.compactMap { code in
+            result.analyse.first(where: { $0.code == code })
+        }
+        .sorted(by: { $0.calculatedPercent < $1.calculatedPercent })
+    }
+    
     var body: some View {
         VStack(spacing: 0){
             
@@ -24,7 +33,7 @@ struct ResultFavView: View {
                         VStack{
                             Text("校系數量")
                                 .font(.caption)
-                            Text("0")
+                            Text("\(depts.count)")
                             .font(.title3)
                             .bold()
                         }
@@ -50,7 +59,31 @@ struct ResultFavView: View {
                 Color.clear
                     .padding(.bottom, 5)
                 
-                Text("功能尚在開發中！敬請期待！")
+                HStack{
+                    Text("喜愛校系")
+                    Spacer()
+                    Text("\(depts.count) 個校系")
+                }
+                .font(.caption)
+                .foregroundStyle(Color(.systemGray2))
+                .padding(.vertical, 5)
+                .padding(.horizontal)
+                
+                LazyVStack(alignment: .leading){
+                    
+                    ForEach(depts) { dept in
+                        ResultDetailViewRowView(dept: dept, result: $result)
+                        if dept.id != depts.last?.id {
+                            Divider()
+                                .padding(.vertical, 3)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: Color(.label).opacity(0.1),radius: 5)
+                .padding(.horizontal)
                 
             }
             .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
@@ -58,7 +91,7 @@ struct ResultFavView: View {
             
             
         }
-        .navigationTitle("最愛校系")
+        .navigationTitle("最愛校系 - \(result.dataName)")
         .navigationBarTitleDisplayMode(.inline)
         
     }

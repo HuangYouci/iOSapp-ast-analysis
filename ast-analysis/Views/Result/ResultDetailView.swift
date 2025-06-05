@@ -10,10 +10,7 @@ import SwiftUI
 struct ResultDetailView: View {
     
     // 傳入 UserGrade 該綁定
-    let result: UserGrade
-    
-    // 傳入 UserData
-    @StateObject var userData: UserData = UserData.shared
+    @Binding var result: UserGrade
 
     // 上一步
     @Environment(\.dismiss) var dismiss
@@ -149,10 +146,8 @@ struct ResultDetailView: View {
                                 HStack{
                                     if editName {
                                         Button {
-                                            if let index = userData.userData.grade.firstIndex(where: { $0.id == result.id }) {
-                                                userData.userData.grade[index].dataName = editNameField
-                                            }
-                                            dismiss()
+                                            result.dataName = editNameField
+                                            editName = false
                                         } label: {
                                             Image(systemName: "checkmark")
                                             Text("儲存資料名稱")
@@ -354,30 +349,28 @@ struct ResultDetailView: View {
                 VStack{
                     HStack{
                         Spacer()
-                        VStack{
-                            Image(systemName: "heart")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
-                                .foregroundStyle(Color.accentColor)
-                            Text("最愛校系")
-                                .font(.callout)
-                            Text("(開發中)")
-                                .font(.callout)
-                                .foregroundStyle(Color(.systemGray))
+                        NavigationLink(destination: ResultFavView(result: $result)){
+                            VStack{
+                                Image(systemName: "heart")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundStyle(Color.accentColor)
+                                Text("最愛校系")
+                                    .font(.callout)
+                            }
                         }
                         Divider()
-                        VStack{
-                            Image(systemName: "text.document")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
-                                .foregroundStyle(Color.accentColor)
-                            Text("志願校系")
-                                .font(.callout)
-                            Text("(開發中)")
-                                .font(.callout)
-                                .foregroundStyle(Color(.systemGray))
+                        NavigationLink(destination: ResultChoView(result: $result)){
+                            VStack{
+                                Image(systemName: "text.document")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundStyle(Color.accentColor)
+                                Text("志願校系")
+                                    .font(.callout)
+                            }
                         }
                         Divider()
                         NavigationLink(destination: GuessDetailView(grade: result)){
@@ -429,10 +422,7 @@ struct ResultDetailView: View {
                 
                 LazyVStack(alignment: .leading){
                     ForEach(fullDepts) { dept in
-                        NavigationLink(destination: ResultDeptView(department: dept, grade: result)){
-                            ResultDetailViewRowFullView(dept: dept, result: result)
-                        }
-                        .buttonStyle(.plain)
+                        ResultDetailViewRowView(dept: dept, result: $result)
                         if dept.id != fullDepts.last?.id {
                             Divider()
                                 .padding(.vertical, 3)
@@ -459,10 +449,7 @@ struct ResultDetailView: View {
                 
                 LazyVStack(alignment: .leading){
                     ForEach(nodataDepts) { dept in
-                        NavigationLink(destination: ResultDeptView(department: dept, grade: result)){
-                            ResultDetailViewRowNodataView(dept: dept, result: result)
-                        }
-                        .buttonStyle(.plain)
+                        ResultDetailViewRowView(dept: dept, result: $result)
                         if dept.id != nodataDepts.last?.id {
                             Divider()
                                 .padding(.vertical, 3)
@@ -492,10 +479,7 @@ struct ResultDetailView: View {
                 
                 LazyVStack(alignment: .leading){
                     ForEach(nopassDepts) { dept in
-                        NavigationLink(destination: ResultDeptView(department: dept, grade: result)){
-                            ResultDetailViewRowNopassView(dept: dept, result: result)
-                        }
-                        .buttonStyle(.plain)
+                        ResultDetailViewRowView(dept: dept, result: $result)
                         if dept.id != nopassDepts.last?.id {
                             Divider()
                                 .padding(.vertical, 3)
@@ -517,8 +501,8 @@ struct ResultDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {
             if shouldDelete {
-                if let index = userData.userData.grade.firstIndex(where: { $0.id == result.id }) {
-                    userData.userData.grade.remove(at: index)
+                if let index = UserData.shared.userData.grade.firstIndex(where: { $0.id == result.id }) {
+                    UserData.shared.userData.grade.remove(at: index)
                 }
             }
         }
@@ -557,104 +541,76 @@ struct ResultDetailView: View {
     }
 }
 
-struct ResultDetailViewRowFullView: View {
+struct ResultDetailViewRowView: View {
     let dept: Departments
-    let result: UserGrade
+    @Binding var result: UserGrade
+    
     var body: some View {
-        HStack(spacing: 15){
-            VStack(alignment: .leading){
-                Text(dept.schoolname)
-                Text(dept.departmentname)
-            }
-            Spacer()
-            VStack(alignment: .trailing){
-                Text(String(format: "%.0f%%", dept.calculatedPercent * 100))
-                    .monospaced()
-                switch(dept.calculatedPercent * 100){
-                case 80...100:
-                    Text("保底")
-                        .font(.caption)
-                        .foregroundColor(Color(red: 0.1, green: 0.6, blue: 0.2))
-                case 60..<80:
-                    Text("安全")
-                        .font(.caption)
-                        .foregroundColor(Color(.systemGreen))
-                case 40..<60:
-                    Text("一般")
-                        .font(.caption)
-                        .foregroundColor(Color.accentColor)
-                case 20..<40:
-                    Text("進攻")
-                        .font(.caption)
-                        .foregroundColor(Color(.red))
-                default:
-                    Text("夢幻")
-                        .font(.caption)
-                        .foregroundColor(Color(.purple))
+        NavigationLink(destination: ResultDeptView(department: dept, grade: $result)){
+            HStack(spacing: 15){
+                VStack(alignment: .leading){
+                    Text(dept.schoolname)
+                    Text(dept.departmentname)
                 }
+                Spacer()
+                switch(dept.calculatedType){
+                case .normal:
+                    VStack(alignment: .trailing){
+                        Text(String(format: "%.0f%%", dept.calculatedPercent * 100))
+                            .monospaced()
+                        switch(dept.calculatedPercent * 100){
+                        case 80...100:
+                            Text("保底")
+                                .font(.caption)
+                                .foregroundColor(Color(red: 0.1, green: 0.6, blue: 0.2))
+                        case 60..<80:
+                            Text("安全")
+                                .font(.caption)
+                                .foregroundColor(Color(.systemGreen))
+                        case 40..<60:
+                            Text("一般")
+                                .font(.caption)
+                                .foregroundColor(Color.accentColor)
+                        case 20..<40:
+                            Text("進攻")
+                                .font(.caption)
+                                .foregroundColor(Color(.red))
+                        default:
+                            Text("夢幻")
+                                .font(.caption)
+                                .foregroundColor(Color(.purple))
+                        }
+                    }
+                case .nodata:
+                    VStack(alignment: .trailing){
+                        Text("--")
+                            .monospaced()
+                        Text("無資料")
+                            .font(.caption)
+                            .foregroundColor(Color(.systemGray))
+                    }
+                case .nopass:
+                    VStack(alignment: .trailing){
+                        Text("0%")
+                            .monospaced()
+                        Text("未過檢定")
+                            .font(.caption)
+                            .foregroundColor(Color(.systemGray))
+                    }
+                case .notCaluclated:
+                    EmptyView()
+                }
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 10)
+                    .foregroundStyle(Color(.systemGray3))
             }
-            Image(systemName: "chevron.right")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 10)
-                .foregroundStyle(Color(.systemGray3))
+            .contentShape(Rectangle())
         }
-        .contentShape(Rectangle())
+        .buttonStyle(.plain)
     }
-}
-
-struct ResultDetailViewRowNodataView: View {
-    let dept: Departments
-    let result: UserGrade
-    var body: some View {
-        HStack(spacing: 15){
-            VStack(alignment: .leading){
-                Text(dept.schoolname)
-                Text(dept.departmentname)
-            }
-            Spacer()
-            VStack(alignment: .trailing){
-                Text("--")
-                    .monospaced()
-                Text("無資料")
-                    .font(.caption)
-                    .foregroundColor(Color(.systemGray))
-            }
-            Image(systemName: "chevron.right")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 10)
-                .foregroundStyle(Color(.systemGray3))
-        }
-        .contentShape(Rectangle())
-    }
-}
-
-struct ResultDetailViewRowNopassView: View {
-    let dept: Departments
-    let result: UserGrade
-    var body: some View {
-        HStack(spacing: 15){
-            VStack(alignment: .leading){
-                Text(dept.schoolname)
-                Text(dept.departmentname)
-            }
-            Spacer()
-            VStack(alignment: .trailing){
-                Text("--")
-                    .monospaced()
-                Text("未過檢定")
-                    .font(.caption)
-                    .foregroundColor(Color(.systemGray))
-            }
-            Image(systemName: "chevron.right")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 10)
-                .foregroundStyle(Color(.systemGray3))
-        }
-        .contentShape(Rectangle())
-    }
+    
 }
 
 struct ResultDetailViewFilterView: View {
@@ -865,7 +821,7 @@ struct ResultDetailViewFilterView: View {
 
 #Preview {
     NavigationStack{
-        ResultDetailView(result: UserData().userData.grade.first!)
+        ResultDetailView(result: .constant(UserData().userData.grade.first!))
     }
 }
 
