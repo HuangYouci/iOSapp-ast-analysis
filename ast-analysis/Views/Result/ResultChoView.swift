@@ -118,17 +118,17 @@ struct ResultChoView: View {
                                 }
                                 if (index == 0){
                                     Text("\(index+1)")
-                                        .frame(width: 20)
+                                        .frame(width: 25)
                                         .monospaced()
                                         .foregroundStyle(Color.accentColor)
                                 } else if (deptsPossibleRange.contains(index)){
                                     Text("\(index+1)")
-                                        .frame(width: 20)
+                                        .frame(width: 25)
                                         .monospaced()
                                         .foregroundStyle(Color(.systemGreen))
                                 } else {
                                     Text("\(index+1)")
-                                        .frame(width: 20)
+                                        .frame(width: 25)
                                         .monospaced()
                                 }
                                 if (index+1 != depts.count){

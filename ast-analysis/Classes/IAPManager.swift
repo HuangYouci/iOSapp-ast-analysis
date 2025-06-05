@@ -161,6 +161,7 @@ class IAPManager: ObservableObject {
         switch productID {
         case "com.huangyouci.ast_analysis.analyzeCount30":
             print("IAPManager | 已授予 100 次分析次數。")
+            UserData.shared.userData.analyzeCount += 100
         default:
             break
         }
