@@ -181,7 +181,7 @@ struct Departments: Identifiable, Codable {
             return 1.0
         }
     }
-    // 後續計算屬性 依結果
+    // 後續計算屬性 依結果 順序
     var calculatedPercent: Double = 0
     var calculatedType: DepartmentCalculatedType = .notCaluclated
 }

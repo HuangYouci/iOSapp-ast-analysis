@@ -96,17 +96,6 @@ struct HomeView: View {
                             .font(.title3)
                             .bold()
                         }
-                        Circle()
-                            .fill(Color(.label).opacity(0.5))
-                            .frame(width: 5, height: 5)
-                            .padding(.horizontal, 3)
-                        VStack{
-                            Text("分析次數")
-                                .font(.caption)
-                            Text("\(userData.userData.analyzeCount)")
-                                .font(.title3)
-                                .bold()
-                        }
                         Spacer()
                     }
                 }
@@ -141,7 +130,7 @@ struct HomeView: View {
                                 .frame(width: 25, height: 25)
                                 .foregroundStyle(Color(.accent))
                         }
-                        Text(userData.userData.analyzeCount > 100000 ? "無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
+                        Text(IAPManager.shared.premium ? "付費用戶 - 無限次分析啟用中" : "尚餘 \(userData.userData.analyzeCount) 次分析次數")
                     }
                     .padding()
                     .background(Color(.systemBackground))
@@ -149,7 +138,7 @@ struct HomeView: View {
                     .shadow(color: Color(.label).opacity(0.1),radius: 5)
                 }
                 .buttonStyle(.plain)
-                .disabled(userData.userData.analyzeCount < 1)
+                .disabled(userData.userData.analyzeCount < 1 && !IAPManager.shared.premium)
                 .padding(.horizontal)
                 
                 NavigationLink(destination: ResultListView()){
@@ -239,7 +228,7 @@ struct HomeView: View {
                                     .frame(width: 25, height: 25)
                                     .foregroundStyle(Color(.accent))
                             }
-                            Text(userData.userData.analyzeCount > 100000 ? "感謝成為付費用戶" : "獲得無限分析次數")
+                            Text(IAPManager.shared.premium ? "感謝成為付費用戶" : "獲得無限分析次數")
                         }
                         .padding()
                         .background(Color(.systemBackground))
@@ -263,7 +252,7 @@ struct HomeView: View {
                 // TIPS
                 TipView(keyName: "decliamier",
                         title: "免責聲明",
-                        content: "本程式之校系資料來自大學考試入學分發委員會，錄取機率計算皆為往年資料與模型推估。所有資料僅供參考，填志願之前請再三思考。使用後，代表您同意使用者條款（EULA）以及隱私政策（Privacy Policy）。若需查看詳細條款，請點擊右上方「i」進入網站查閱。（您可透過提示右方的「x」來關閉這些提示）")
+                        content: "本程式之校系資料來自大學考試入學分發委員會，錄取機率計算皆為往年資料與模型推估。所有資料僅供參考，填志願之前請再三思考。使用後，代表您同意使用者條款以及隱私政策。若需查看詳細條款，請點擊右上方「i」進入網站查閱。（您可透過提示右方的「x」來關閉這些提示）")
                 
                 TipView(keyName: "distAnalysis",
                         title: "差距分析",

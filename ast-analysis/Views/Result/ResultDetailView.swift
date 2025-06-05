@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ResultDetailView: View {
     
-    // 輸入 Result ID、得到 Result
+    // 傳入 UserGrade 該綁定
     let result: UserGrade
     
     // 傳入 UserData
@@ -368,7 +368,7 @@ struct ResultDetailView: View {
                         }
                         Divider()
                         VStack{
-                            Image(systemName: "doc.richtext.zh")
+                            Image(systemName: "text.document")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)

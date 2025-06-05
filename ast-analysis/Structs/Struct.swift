@@ -39,7 +39,6 @@ struct UserGrade: Identifiable, Codable {
     var SpecialPercentage: Int
     // 系統分析
     var analyse: [Departments] = []
-    // 喜好與志願
-    var favDept: [Departments] = []
-    var choDept: [Departments?] = Array(repeating: nil, count: 100)
+    // 喜好
+    var favDept: [String] = []
 }

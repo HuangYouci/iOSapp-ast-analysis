@@ -13,6 +13,8 @@ struct ResultDeptView: View {
     let department: Departments
     let grade: UserGrade
     
+    @StateObject var userData: UserData = UserData.shared
+    
     var body: some View{
         
         VStack(spacing: 0){
@@ -525,6 +527,29 @@ struct ResultDeptView: View {
         }
         .navigationTitle(department.fullname)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing){
+                Group {
+                    if grade.favDept.contains(department.code){
+                        Button {
+                            if let index = userData.userData.grade.firstIndex(where: { $0.id == grade.id }) {
+                                    userData.userData.grade[index].favDept.removeAll(where:{ $0 == department.code })
+                                }
+                        } label: {
+                            Image(systemName: "heart.fill")
+                        }
+                    } else {
+                        Button {
+                            if let index = userData.userData.grade.firstIndex(where: { $0.id == grade.id }) {
+                                userData.userData.grade[index].favDept.append(department.code)
+                            }
+                        } label: {
+                            Image(systemName: "heart")
+                        }
+                    }
+                }
+            }
+        }
     }
                                  
     private func scoreGenerator(name: String, score: Int, multiplier: Double) -> some View {
