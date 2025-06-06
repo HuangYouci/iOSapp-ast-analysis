@@ -11,42 +11,9 @@ struct ResultChoView: View {
     
     @Binding var result: UserGrade
     
-    private var depts: [Departments] {
-        result.favDept.compactMap { code in
-            result.analyse.first(where: { $0.code == code })
-        }
-    }
-    
-    private var deptsFirst: Departments? {
-        let d = result.favDept.compactMap { code in
-            result.analyse.first(where: { $0.code == code })
-        }
-        return d.first
-    }
-    
-    private var deptsPossibleRange: [Int] {
-        let d = result.favDept.compactMap { code in
-            result.analyse.first(where: { $0.code == code })
-        }
-        var resultIndices: [Int] = []
-        var startIndex: Int? = nil
-        for (index, dept) in d.enumerated() {
-            let percent = dept.calculatedPercent
-            if startIndex == nil {
-                if percent >= 0.45 {
-                    startIndex = index
-                    resultIndices.append(index)
-                }
-            } else {
-                if percent >= 0.45 && percent < 0.60 {
-                    resultIndices.append(index)
-                } else {
-                    return resultIndices
-                }
-            }
-        }
-        return resultIndices
-    }
+    @State private var depts: [Departments] = []
+    @State private var deptsFirst: Departments?
+    @State private var deptsPossibleRange: [Int] = []
     
     var body: some View {
         VStack(spacing: 0){
@@ -66,6 +33,32 @@ struct ResultChoView: View {
                             Text("\(depts.count)")
                             .font(.title3)
                             .bold()
+                        }
+                        Circle()
+                            .fill(Color(.label).opacity(0.5))
+                            .frame(width: 5, height: 5)
+                            .padding(.horizontal, 3)
+                        VStack(alignment: .leading){
+                            HStack{
+                                Text("第一志願").bold()
+                                if let df = deptsFirst {
+                                    Text(df.fullname)
+                                        .lineLimit(1)
+                                } else {
+                                    Text("尚未設置")
+                                        .foregroundStyle(Color(.systemGray))
+                                }
+                            }
+                            HStack{
+                                Text("預估落點").bold()
+                                if let dp = deptsPossibleRange.first {
+                                    Text(depts[dp].fullname)
+                                        .lineLimit(1)
+                                } else {
+                                    Text("不錄取")
+                                        .foregroundStyle(Color(.systemGray))
+                                }
+                            }
                         }
                         Spacer()
                     }
@@ -183,7 +176,50 @@ struct ResultChoView: View {
         }
         .navigationTitle("志願校系 - \(result.dataName)")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            update()
+        }
+        .onChange(of: result.favDept){ _ in
+            update()
+        }
         
+    }
+    
+    private func update() {
+        depts = {
+            result.favDept.compactMap { code in
+                result.analyse.first(where: { $0.code == code })
+            }
+        }()
+        deptsFirst = {
+            let d = result.favDept.compactMap { code in
+                result.analyse.first(where: { $0.code == code })
+            }
+            return d.first
+        }()
+        deptsPossibleRange = {
+            let d = result.favDept.compactMap { code in
+                result.analyse.first(where: { $0.code == code })
+            }
+            var resultIndices: [Int] = []
+            var startIndex: Int? = nil
+            for (index, dept) in d.enumerated() {
+                let percent = dept.calculatedPercent
+                if startIndex == nil {
+                    if percent >= 0.45 {
+                        startIndex = index
+                        resultIndices.append(index)
+                    }
+                } else {
+                    if percent >= 0.45 && percent < 0.60 {
+                        resultIndices.append(index)
+                    } else {
+                        return resultIndices
+                    }
+                }
+            }
+            return resultIndices
+        }()
     }
 }
 

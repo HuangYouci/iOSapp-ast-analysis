@@ -427,8 +427,10 @@ struct InputView: View {
                                     .bold()
                                 Text("資料已登錄，請至分析頁查看分析結果")
                                     .foregroundStyle(Color(.systemGray))
-                                Text("分析次數已扣除，目前尚餘 \(userData.userData.analyzeCount) 次")
-                                    .foregroundStyle(Color(.systemGray))
+                                if (!IAPManager.shared.premium){
+                                    Text("分析次數已扣除，目前尚餘 \(userData.userData.analyzeCount) 次")
+                                        .foregroundStyle(Color(.systemGray))
+                                }
                             }
                             Spacer()
                             HStack{

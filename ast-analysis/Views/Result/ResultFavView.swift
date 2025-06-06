@@ -11,12 +11,7 @@ struct ResultFavView: View {
     
     @Binding var result: UserGrade
     
-    private var depts: [Departments] {
-        result.favDept.compactMap { code in
-            result.analyse.first(where: { $0.code == code })
-        }
-        .sorted(by: { $0.calculatedPercent < $1.calculatedPercent })
-    }
+    @State private var depts: [Departments] = []
     
     var body: some View {
         VStack(spacing: 0){
@@ -34,8 +29,8 @@ struct ResultFavView: View {
                             Text("校系數量")
                                 .font(.caption)
                             Text("\(depts.count)")
-                            .font(.title3)
-                            .bold()
+                                .font(.title3)
+                                .bold()
                         }
                         Spacer()
                     }
@@ -93,6 +88,20 @@ struct ResultFavView: View {
         }
         .navigationTitle("最愛校系 - \(result.dataName)")
         .navigationBarTitleDisplayMode(.inline)
-        
+        .onAppear {
+            update()
+        }
+        .onChange(of: result.favDept){ _ in
+            update()
+        }
+    }
+    
+    private func update() {
+        depts = {
+            result.favDept.compactMap { code in
+                result.analyse.first(where: { $0.code == code })
+            }
+            .sorted(by: { $0.calculatedPercent < $1.calculatedPercent })
+        }()
     }
 }
